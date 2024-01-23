@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
+import com.ozanarik.mvvmmovieapp.business.model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.MovieAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class MoviesFragment : Fragment() {
+class MoviesFragment : Fragment(),MovieAdapter.OnItemClickListener {
 
     private lateinit var binding: FragmentMoviesBinding
     private lateinit var movieViewModel: MovieViewModel
@@ -68,7 +69,11 @@ class MoviesFragment : Fragment() {
 
 
     private fun handleMovieRv(){
-        movieAdapter = MovieAdapter()
+        movieAdapter = MovieAdapter(object : MovieAdapter.OnItemClickListener {
+            override fun onItemClick(currentMovieOrShow: Result) {
+                Log.e("asd",currentMovieOrShow.id.toString())
+            }
+        })
         binding.nowPlayingRv.apply {
             layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
             adapter = movieAdapter
@@ -76,6 +81,9 @@ class MoviesFragment : Fragment() {
         }
     }
 
+    override fun onItemClick(currentMovieOrShow: Result) {
+
+    }
 
 
 }

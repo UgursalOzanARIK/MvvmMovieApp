@@ -7,13 +7,13 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.ozanarik.mvvmmovieapp.business.model.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesListItemBinding
+import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.doubleToFloat
-import java.time.format.DateTimeFormatter
+import com.squareup.picasso.Picasso
 
-class MovieAdapter:RecyclerView.Adapter<MovieAdapter.MovieHolder>() {
+class MovieAdapter(private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<MovieAdapter.MovieHolder>() {
 
 
     inner class MovieHolder(val binding: MoviesListItemBinding):RecyclerView.ViewHolder(binding.root)
@@ -43,17 +43,28 @@ class MovieAdapter:RecyclerView.Adapter<MovieAdapter.MovieHolder>() {
 
         val currentMovie = asyncDifferList.currentList[position]
 
-        holder.binding.apply {
-            tvMovieName.text = currentMovie.originalTitle
-            tvReleaseDate.text = "Release Date : ${currentMovie.releaseDate}"
-            Glide.with(imageViewPosterPath).load(currentMovie.posterPath)
-            ratingBar.rating = currentMovie.voteAverage.doubleToFloat()
+        holder.apply {
+            binding.tvMovieName.text = currentMovie.originalTitle
+            binding.tvReleaseDate.text = "Release Date : ${currentMovie.releaseDate}"
+            Picasso.get().load(IMAGE_BASE_URL + currentMovie.posterPath).into(binding.imageViewPosterPath)
+            binding.ratingBar.rating = currentMovie.voteAverage.doubleToFloat()
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onItemClick(currentMovie)
         }
 
 
     }
 
+
+
     override fun getItemCount(): Int {
         return asyncDifferList.currentList.size
+    }
+
+
+    interface OnItemClickListener{
+        fun onItemClick(currentMovieOrShow:Result)
     }
 }

@@ -71,8 +71,8 @@ dependencies {
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.6")
     implementation ("androidx.navigation:navigation-ui-ktx:2.7.6")
 
-    //GLIDE
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    //PICASSO
+    implementation ("com.squareup.picasso:picasso:2.8")
 
 
 
