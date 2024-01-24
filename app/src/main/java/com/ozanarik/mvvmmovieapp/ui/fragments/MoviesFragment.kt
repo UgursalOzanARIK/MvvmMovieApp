@@ -16,12 +16,11 @@ import com.ozanarik.mvvmmovieapp.ui.adapters.MovieAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
-class MoviesFragment : Fragment(),MovieAdapter.OnItemClickListener {
-
+class MoviesFragment : Fragment() {
     private lateinit var binding: FragmentMoviesBinding
     private lateinit var movieViewModel: MovieViewModel
     private lateinit var movieAdapter: MovieAdapter
@@ -31,21 +30,18 @@ class MoviesFragment : Fragment(),MovieAdapter.OnItemClickListener {
     ): View {
 
 
+        binding = FragmentMoviesBinding.inflate(inflater,container,false)
         movieViewModel = ViewModelProvider(this)[MovieViewModel::class.java]
 
-        binding = FragmentMoviesBinding.inflate(inflater,container,false)
-        // Inflate the layout for this fragment
 
         handleMovieRv()
-
         handleNowPlayingMovies()
 
 
+
+        // Inflate the layout for this fragment
         return binding.root
     }
-
-
-
 
     private fun handleNowPlayingMovies(){
 
@@ -56,34 +52,31 @@ class MoviesFragment : Fragment(),MovieAdapter.OnItemClickListener {
                     is Resource.Success->{
                         movieAdapter.asyncDifferList.submitList(movieResponse.data!!.results)
                     }
-                    is Resource.Loading->{
-                        Log.e("as","loading")
-                    }
                     is Resource.Error->{
-                        Log.e("as","error")
+                        Log.e("asd","loading")
+                    }
+                    is Resource.Loading->{
+                        Log.e("asd","loading")
                     }
                 }
             }
         }
-    }
 
+    }
 
     private fun handleMovieRv(){
-        movieAdapter = MovieAdapter(object : MovieAdapter.OnItemClickListener {
-            override fun onItemClick(currentMovieOrShow: Result) {
-                Log.e("asd",currentMovieOrShow.id.toString())
-            }
-        })
-        binding.nowPlayingRv.apply {
-            layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
-            adapter = movieAdapter
-            setHasFixedSize(true)
+
+        binding.apply {
+            movieAdapter = MovieAdapter(object : MovieAdapter.OnItemClickListener {
+                override fun onItemClick(currentMovieOrShow: Result) {
+                    Log.e("asc",currentMovieOrShow.id.toString())
+                }
+            })
+            movieRv.adapter = movieAdapter
+            movieRv.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+
         }
-    }
-
-    override fun onItemClick(currentMovieOrShow: Result) {
 
     }
-
 
 }
