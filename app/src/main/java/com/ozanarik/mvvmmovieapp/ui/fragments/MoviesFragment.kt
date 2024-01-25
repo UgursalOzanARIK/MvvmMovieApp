@@ -6,24 +6,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.R
 import com.ozanarik.mvvmmovieapp.business.model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesBinding
-import com.ozanarik.mvvmmovieapp.ui.adapters.MovieAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.NowPlayingMovieAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.PopularMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MoviesFragment : Fragment() {
     private lateinit var binding: FragmentMoviesBinding
     private lateinit var movieViewModel: MovieViewModel
-    private lateinit var movieAdapter: MovieAdapter
+    private lateinit var nowPlayingMoviesAdapter: NowPlayingMovieAdapter
+    private lateinit var popularMoviesAdapter: PopularMoviesAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +37,7 @@ class MoviesFragment : Fragment() {
 
         handleMovieRv()
         handleNowPlayingMovies()
+        handlePopularMovies()
 
 
 
@@ -47,10 +49,10 @@ class MoviesFragment : Fragment() {
 
         movieViewModel.getNowPlayingMovies()
         viewLifecycleOwner.lifecycleScope.launch {
-            movieViewModel.movieResponse.collect{movieResponse->
-                when(movieResponse){
+            movieViewModel.nowPlayingMovies.collect{ nowPlayingMoviesResponse->
+                when(nowPlayingMoviesResponse){
                     is Resource.Success->{
-                        movieAdapter.asyncDifferList.submitList(movieResponse.data!!.results)
+                        nowPlayingMoviesAdapter.asyncDifferList.submitList(nowPlayingMoviesResponse.data!!.results)
                     }
                     is Resource.Error->{
                         Log.e("asd","loading")
@@ -61,19 +63,43 @@ class MoviesFragment : Fragment() {
                 }
             }
         }
+    }
+    private fun handlePopularMovies(){
+        movieViewModel.getPopularMovies()
+        viewLifecycleOwner.lifecycleScope.launch {
+            movieViewModel.popularMovies.collect{popularMovieResponse->
 
+                when(popularMovieResponse){
+                    is Resource.Success->popularMoviesAdapter.asyncDifferList.submitList(popularMovieResponse.data!!.results)
+                    is Resource.Error->Log.e("asd",popularMovieResponse.message!!)
+                    is Resource.Loading->Log.e("asd","loading")
+                }
+            }
+        }
     }
 
     private fun handleMovieRv(){
 
         binding.apply {
-            movieAdapter = MovieAdapter(object : MovieAdapter.OnItemClickListener {
+
+            popularMoviesAdapter = PopularMoviesAdapter(object : PopularMoviesAdapter.OnItemClickListener {
                 override fun onItemClick(currentMovieOrShow: Result) {
-                    Log.e("asc",currentMovieOrShow.id.toString())
+                    Log.e("asd",currentMovieOrShow.id.toString())
                 }
             })
-            movieRv.adapter = movieAdapter
-            movieRv.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            nowPlayingMoviesAdapter = NowPlayingMovieAdapter(object : NowPlayingMovieAdapter.OnItemClickListener {
+                override fun onItemClick(currentMovieOrShow: Result) {
+                    Log.e("asd",currentMovieOrShow.id.toString())
+                }
+            })
+
+
+
+            rvNowPlayingMovies.adapter = nowPlayingMoviesAdapter
+            rvNowPlayingMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+
+            rvPopularMovies.adapter = popularMoviesAdapter
+            rvPopularMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
 
         }
 

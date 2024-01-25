@@ -12,4 +12,7 @@
     <color name="deeppurple">#4527A0</color>
     <color name="lime">#AEEA00</color>
 
+    <color name="greyVariant">#323131</color>
+    <color name="greyVariant1">#424242</color>
+    <color name="greyVariant2">#263238</color>
 </resources>

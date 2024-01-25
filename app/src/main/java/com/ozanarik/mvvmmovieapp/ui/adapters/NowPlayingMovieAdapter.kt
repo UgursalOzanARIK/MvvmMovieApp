@@ -1,7 +1,5 @@
 package com.ozanarik.mvvmmovieapp.ui.adapters
 
-import android.icu.util.Calendar
-import android.icu.util.LocaleData
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,13 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ozanarik.mvvmmovieapp.business.model.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
-import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.doubleToFloat
 import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-class MovieAdapter(private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<MovieAdapter.MovieHolder>() {
+class NowPlayingMovieAdapter(private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<NowPlayingMovieAdapter.MovieHolder>() {
 
     inner class MovieHolder(val binding: MoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
 
@@ -48,9 +42,8 @@ class MovieAdapter(private val onItemClickListener: OnItemClickListener) :Recycl
         holder.apply {
             binding.tvMovieName.text = currentMovie.originalTitle
 
-            binding.buttonReleaseDate.text = currentMovie.releaseDate
             Picasso.get().load(IMAGE_BASE_URL + currentMovie.posterPath).into(binding.imageViewPosterPath)
-            binding.ratingBar.rating = currentMovie.voteAverage.doubleToFloat()
+            binding.tvImdb.text = currentMovie.voteAverage.toString()
         }
 
         holder.itemView.setOnClickListener {
