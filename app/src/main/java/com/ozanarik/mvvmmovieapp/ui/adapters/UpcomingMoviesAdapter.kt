@@ -1,9 +1,7 @@
 package com.ozanarik.mvvmmovieapp.ui.adapters
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +11,10 @@ import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
 import java.text.DecimalFormat
 
-class NowPlayingMovieAdapter(private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<NowPlayingMovieAdapter.MovieHolder>() {
+class UpcomingMoviesAdapter(private val onItemClickListener: OnItemClickListener): RecyclerView.Adapter<UpcomingMoviesAdapter.MovieHolder>() {
 
     inner class MovieHolder(val binding: MoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
-
-    private val diffUtilCallBack = object : DiffUtil.ItemCallback<Result>(){
+    private val diffUtil = object : DiffUtil.ItemCallback<Result>(){
         override fun areItemsTheSame(oldItem: Result, newItem: Result): Boolean {
             return oldItem.id == newItem.id
         }
@@ -26,8 +23,7 @@ class NowPlayingMovieAdapter(private val onItemClickListener: OnItemClickListene
             return oldItem == newItem
         }
     }
-
-    val asyncDifferList = AsyncListDiffer(this,diffUtilCallBack)
+    val asyncDifferList = AsyncListDiffer(this,diffUtil)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
         val layoutFrom = LayoutInflater.from(parent.context)
@@ -36,31 +32,24 @@ class NowPlayingMovieAdapter(private val onItemClickListener: OnItemClickListene
     }
 
     override fun onBindViewHolder(holder: MovieHolder, position: Int) {
-
-        val currentMovie = asyncDifferList.currentList[position]
-
+        val currentMovieOrShow = asyncDifferList.currentList[position]
         holder.apply {
-            binding.tvMovieName.text = currentMovie.originalTitle
-
-            Picasso.get().load(IMAGE_BASE_URL + currentMovie.posterPath).into(binding.imageViewPosterPath)
+            binding.tvMovieName.text = currentMovieOrShow.originalTitle
+            Picasso.get().load(IMAGE_BASE_URL + currentMovieOrShow.posterPath).into(binding.imageViewPosterPath)
             val imdbValueFormat = DecimalFormat("#.##")
 
-            val movieImdb = imdbValueFormat.format(currentMovie.voteAverage)
-
+            val movieImdb = imdbValueFormat.format(currentMovieOrShow.voteAverage)
             binding.tvImdb.text = movieImdb
-
         }
-
-        holder.itemView.setOnClickListener {
-            onItemClickListener.onItemClick(currentMovie)
+        holder.itemView.apply {
+            onItemClickListener.onItemClick(currentMovieOrShow)
         }
     }
 
     override fun getItemCount(): Int {
         return asyncDifferList.currentList.size
     }
-
     interface OnItemClickListener{
-        fun onItemClick(currentMovieOrShow:Result)
+        fun onItemClick(movie:Result)
     }
 }

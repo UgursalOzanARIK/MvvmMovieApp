@@ -11,6 +11,7 @@ import com.ozanarik.mvvmmovieapp.business.model.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
+import java.text.DecimalFormat
 
 class PopularMoviesAdapter(private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<PopularMoviesAdapter.MovieHolder>() {
 
@@ -44,7 +45,12 @@ class PopularMoviesAdapter(private val onItemClickListener: OnItemClickListener)
             binding.tvMovieName.text = currentMovie.originalTitle
 
             Picasso.get().load(IMAGE_BASE_URL + currentMovie.posterPath).into(binding.imageViewPosterPath)
-            binding.tvImdb.text = currentMovie.voteAverage.toString()
+            val imdbValueFormat = DecimalFormat("#.##")
+
+            val movieImdb = imdbValueFormat.format(currentMovie.voteAverage)
+
+            binding.tvImdb.text = movieImdb
+
 
         }
 
