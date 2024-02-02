@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id ("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id ("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -77,6 +78,7 @@ dependencies {
     //LOTTIE
     implementation ("com.airbnb.android:lottie:6.2.0")
 
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
 
 }

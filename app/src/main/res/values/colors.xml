@@ -11,9 +11,10 @@
     <color name="brown">#BCAAA4</color>
     <color name="deeppurple">#4527A0</color>
     <color name="lime">#AEEA00</color>
-
+    <color name="pinky">#C2185B</color>
     <color name="greyVariant">#323131</color>
     <color name="greyVariant1">#424242</color>
     <color name="greyVariant2">#263238</color>
     <color name="otherLightBlue">#0091EA</color>
+    <color name="pinkVariant">#880E4F</color>
 </resources>

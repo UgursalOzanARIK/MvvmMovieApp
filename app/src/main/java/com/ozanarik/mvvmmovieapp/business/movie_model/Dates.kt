@@ -1,7 +1,6 @@
-package com.ozanarik.mvvmmovieapp.business.model
+package com.ozanarik.mvvmmovieapp.business.movie_model
 
 
-import com.google.gson.annotations.SerializedName
 import com.google.gson.annotations.Expose
 
 data class Dates(

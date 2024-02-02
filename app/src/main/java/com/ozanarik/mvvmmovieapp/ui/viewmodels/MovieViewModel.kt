@@ -2,7 +2,8 @@ package com.ozanarik.mvvmmovieapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ozanarik.mvvmmovieapp.business.model.MovieResponse
+import com.ozanarik.mvvmmovieapp.business.movie_model.MovieDetailResponse
+import com.ozanarik.mvvmmovieapp.business.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,9 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
 
     private val _upcomingMovies:MutableStateFlow<Resource<MovieResponse>> = MutableStateFlow(Resource.Loading())
     val upcomingMovies:StateFlow<Resource<MovieResponse>> = _upcomingMovies
+
+    private val _detaiedMovieData:MutableStateFlow<Resource<MovieDetailResponse>> = MutableStateFlow(Resource.Loading())
+    val detailedMovieData:StateFlow<Resource<MovieDetailResponse>> = _detaiedMovieData
 
     fun getTopRatedMovies()=viewModelScope.launch {
 
@@ -107,6 +111,25 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
 
         }catch (e:IOException){
             _upcomingMovies.value =Resource.Error(e.localizedMessage?:e.message!!)
+        }
+    }
+
+    suspend fun getDetailedMovieData(movieId:Int){
+        _detaiedMovieData.value = Resource.Loading()
+
+        try {
+
+            val detailedMovieResponse = withContext(Dispatchers.IO){
+                movieRepository.getMovieDetail(movieId)
+            }
+            if (detailedMovieResponse.isSuccessful){
+                _detaiedMovieData.value =Resource.Success(detailedMovieResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _detaiedMovieData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }catch (e:IOException){
+            _detaiedMovieData.value = Resource.Error(e.localizedMessage?:e.message!!)
         }
 
 

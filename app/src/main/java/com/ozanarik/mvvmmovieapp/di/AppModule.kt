@@ -1,7 +1,9 @@
 package com.ozanarik.mvvmmovieapp.di
 
 import com.ozanarik.mvvmmovieapp.business.remote.MovieApi
+import com.ozanarik.mvvmmovieapp.business.remote.ShowApi
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
+import com.ozanarik.mvvmmovieapp.business.repository.ShowsRepository
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -55,6 +57,18 @@ class AppModule {
     @Singleton
     fun provideMovieRepository(movieApi: MovieApi):MovieRepository{
         return MovieRepository(movieApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShowsApi(retrofit: Retrofit):ShowApi{
+        return retrofit.create(ShowApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShowsRepository(showApi: ShowApi):ShowsRepository{
+        return ShowsRepository(showApi)
     }
 
 }

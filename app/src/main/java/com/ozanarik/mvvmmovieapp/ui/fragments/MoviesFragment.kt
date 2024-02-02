@@ -2,24 +2,23 @@ package com.ozanarik.mvvmmovieapp.ui.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.SortedList
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.model.Result
+import com.ozanarik.mvvmmovieapp.business.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesBinding
-import com.ozanarik.mvvmmovieapp.ui.adapters.NowPlayingMovieAdapter
-import com.ozanarik.mvvmmovieapp.ui.adapters.PopularMoviesAdapter
-import com.ozanarik.mvvmmovieapp.ui.adapters.TopRatedMoviesAdapter
-import com.ozanarik.mvvmmovieapp.ui.adapters.UpcomingMoviesAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.NowPlayingMovieAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.PopularMoviesAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.TopRatedMoviesAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.UpcomingMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
+import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.setVisibility
+import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,7 +26,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MoviesFragment : Fragment() {
     private lateinit var binding: FragmentMoviesBinding
-    private lateinit var movieViewModel: MovieViewModel
+    lateinit var movieViewModel: MovieViewModel
     private lateinit var nowPlayingMoviesAdapter: NowPlayingMovieAdapter
     private lateinit var popularMoviesAdapter: PopularMoviesAdapter
     private lateinit var topRatedMoviesAdapter: TopRatedMoviesAdapter
@@ -65,6 +64,9 @@ class MoviesFragment : Fragment() {
                 when(nowPlayingMoviesResponse){
                     is Resource.Success->{
 
+                        binding.movieLoadingAnim.setVisibility(false)
+                        binding.movieLoadingAnim.playAnimation()
+
                         val nowPlayingMovieList = nowPlayingMoviesResponse.data!!.results
 
                         binding.imageViewNowPlayingFilter.setOnClickListener {
@@ -88,10 +90,11 @@ class MoviesFragment : Fragment() {
 
                     }
                     is Resource.Error->{
-                        Log.e("asd","loading")
+                        showSnackbar(nowPlayingMoviesResponse.message!!)
+                        binding.movieLoadingAnim.setVisibility(false)
                     }
                     is Resource.Loading->{
-                        Log.e("asd","loading")
+                        binding.movieLoadingAnim.setVisibility(true)
                     }
                 }
             }
@@ -103,9 +106,45 @@ class MoviesFragment : Fragment() {
             movieViewModel.popularMovies.collect{popularMovieResponse->
 
                 when(popularMovieResponse){
-                    is Resource.Success->popularMoviesAdapter.asyncDifferList.submitList(popularMovieResponse.data!!.results)
-                    is Resource.Error->Log.e("asd",popularMovieResponse.message!!)
-                    is Resource.Loading->Log.e("asd","loading")
+                    is Resource.Success->{
+                        binding.movieLoadingAnim.setVisibility(false)
+                        binding.movieLoadingAnim.playAnimation()
+
+                        val popularMoviesList = popularMovieResponse.data!!.results
+
+                        binding.imageViewPopularMoviesFilter.setOnClickListener {
+
+                            val optionList = arrayOf<String>("Order By Imdb Rate","Order By Release Date","Order By Adult Content","Default")
+
+                            val alertDialog = AlertDialog.Builder(requireContext())
+                            alertDialog.setTitle("Choose An Option")
+                                .setItems(optionList){_,option->
+                                    val sortedList = when(option){
+
+                                        0->{popularMoviesList.sortedBy { movie->movie.voteAverage }}
+                                        1->{popularMoviesList.sortedBy { movie->movie.voteAverage }}
+                                        2->{popularMoviesList.sortedBy { movie->movie.voteAverage }}
+                                        else->popularMoviesList
+                                    }
+
+                                    popularMoviesAdapter.asyncDifferList.submitList(sortedList)
+                                }.create().show()
+
+
+                        }
+
+                        popularMoviesAdapter.asyncDifferList.submitList(popularMovieResponse.data.results)
+                        popularMoviesAdapter.notifyDataSetChanged()
+
+
+
+                    }
+
+
+                    is Resource.Error-> {
+                        showSnackbar(popularMovieResponse.message!!)
+                        binding.movieLoadingAnim.setVisibility(false) }
+                    is Resource.Loading->{binding.movieLoadingAnim.setVisibility(true)}
                 }
             }
         }
@@ -115,11 +154,39 @@ class MoviesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             movieViewModel.topRatedMovies.collect{topRatedMoviesResponse->
                 when(topRatedMoviesResponse){
-                    is Resource.Success->topRatedMoviesAdapter.asyncDifferList.submitList(topRatedMoviesResponse.data!!.results)
-                    is Resource.Error->Log.e("asd","error")
-                    is Resource.Loading->Log.e("asd","error")
-                }
+                    is Resource.Success->{
+                        binding.movieLoadingAnim.setVisibility(false)
+                        binding.movieLoadingAnim.playAnimation()
 
+                        val topRatedMoviesList = topRatedMoviesResponse.data!!.results
+
+                        binding.imageViewTopRatedMoviesFilter.setOnClickListener {
+
+                            val optionList = arrayOf<String>("Order By Imdb Rate","Order By Release Date","Order By Adult Content","Default")
+                            val alertDialog = AlertDialog.Builder(requireContext())
+                            alertDialog.setTitle("Choose An Option")
+                                .setItems(optionList){_,option->
+
+                                    val sortedList = when(option){
+                                        0->topRatedMoviesList.sortedBy { movie->movie.voteAverage }
+                                        1->topRatedMoviesList.sortedBy { movie->movie.releaseDate }
+                                        2->topRatedMoviesList.sortedBy { movie->movie.adult }
+                                        else->topRatedMoviesList
+
+                                    }
+
+                                    topRatedMoviesAdapter.asyncDifferList.submitList(sortedList)
+
+                                }.create().show()
+                        }
+
+                        topRatedMoviesAdapter.asyncDifferList.submitList(topRatedMoviesResponse.data.results)
+                        topRatedMoviesAdapter.notifyDataSetChanged()
+                    }
+                    is Resource.Error->{binding.movieLoadingAnim.setVisibility(false)
+                    showSnackbar(topRatedMoviesResponse.message!!)}
+                    is Resource.Loading->{binding.movieLoadingAnim.setVisibility(true)}
+                }
             }
         }
     }
@@ -131,6 +198,10 @@ class MoviesFragment : Fragment() {
 
                 when(upcomingMoviesResponse){
                     is Resource.Success->{
+
+                        binding.movieLoadingAnim.setVisibility(false)
+                        binding.movieLoadingAnim.playAnimation()
+
                         val upcomingMoviesList = upcomingMoviesResponse.data!!.results
 
                         binding.imageViewUpcomingFilter.setOnClickListener {
@@ -147,14 +218,16 @@ class MoviesFragment : Fragment() {
                                     }
 
                                     upcomingMoviesAdapter.asyncDifferList.submitList(sortedList)
-                                    upcomingMoviesAdapter.notifyDataSetChanged()
+
                                 }.create().show()
                         }
+
                         upcomingMoviesAdapter.asyncDifferList.submitList(upcomingMoviesList)
 
                     }
-                    is Resource.Error->{Log.e("asd",upcomingMoviesResponse.message!!)}
-                    is Resource.Loading->{Log.e("asd","loading")}
+                    is Resource.Error->{showSnackbar(upcomingMoviesResponse.message!!)
+                    binding.movieLoadingAnim.setVisibility(false)}
+                    is Resource.Loading->{binding.movieLoadingAnim.setVisibility(true)}
                 }
             }
         }
@@ -166,32 +239,33 @@ class MoviesFragment : Fragment() {
 
             popularMoviesAdapter = PopularMoviesAdapter(object : PopularMoviesAdapter.OnItemClickListener {
                 override fun onItemClick(currentMovieOrShow: Result) {
-                    Log.e("asd",currentMovieOrShow.voteAverage.toString())
-                    Log.e("asd",currentMovieOrShow.releaseDate.toString())
-                    Log.e("asd",currentMovieOrShow.adult.toString())
+                    val movieData = MoviesFragmentDirections.actionMoviesFragmentToDetailFragment(currentMovieOrShow.id)
+                    findNavController().navigate(movieData)
 
                 }
             })
             nowPlayingMoviesAdapter = NowPlayingMovieAdapter(object : NowPlayingMovieAdapter.OnItemClickListener {
                 override fun onItemClick(currentMovieOrShow: Result) {
-                    Log.e("asd",currentMovieOrShow.voteAverage.toString())
-                    Log.e("asd",currentMovieOrShow.releaseDate.toString())
-                    Log.e("asd",currentMovieOrShow.adult.toString())
+                    val movieData = MoviesFragmentDirections.actionMoviesFragmentToDetailFragment(currentMovieOrShow.id)
+                    findNavController().navigate(movieData)
+
                 }
             })
             topRatedMoviesAdapter = TopRatedMoviesAdapter(object : TopRatedMoviesAdapter.OnItemClickListener {
-                override fun onItemClickListener(currentMovieOrShow: Result) {
-                    Log.e("asd",currentMovieOrShow.id.toString())
+                override fun onItemClick(currentMovieOrShow: Result) {
+                    val movieData = MoviesFragmentDirections.actionMoviesFragmentToDetailFragment(currentMovieOrShow.id)
+                    findNavController().navigate(movieData)
+
                 }
             })
 
             upcomingMoviesAdapter = UpcomingMoviesAdapter(object : UpcomingMoviesAdapter.OnItemClickListener {
-                override fun onItemClick(movie: Result) {
-                    Log.e("asd","asdas")
+                override fun onItemClick(currentMovieOrShow:Result) {
+                    val movieData = MoviesFragmentDirections.actionMoviesFragmentToDetailFragment(currentMovieOrShow.id)
+                    findNavController().navigate(movieData)
+
                 }
             })
-
-
 
             rvNowPlayingMovies.adapter = nowPlayingMoviesAdapter
             rvNowPlayingMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
