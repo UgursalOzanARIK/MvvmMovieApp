@@ -11,7 +11,7 @@
         tools:layout="@layout/fragment_movies" >
         <action
             android:id="@+id/action_moviesFragment_to_detailFragment"
-            app:destination="@id/detailFragment"
+            app:destination="@id/movieDetailFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -21,14 +21,39 @@
         android:id="@+id/showsFragment"
         android:name="com.ozanarik.mvvmmovieapp.ui.fragments.ShowsFragment"
         android:label="fragment_shows"
-        tools:layout="@layout/fragment_shows" />
+        tools:layout="@layout/fragment_shows" >
+        <action
+            android:id="@+id/action_showsFragment_to_showDetailFragment"
+            app:destination="@id/showDetailFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/detailFragment"
-        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.DetailFragment"
+        android:id="@+id/movieDetailFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.MovieDetailFragment"
         android:label="fragment_detail"
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="movieData"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/showDetailFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.ShowDetailFragment"
+        android:label="fragment_show_detail"
+        tools:layout="@layout/fragment_show_detail" >
+        <argument
+            android:name="showData"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_showDetailFragment_to_lastEpisodeFragment"
+            app:destination="@id/lastEpisodeFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/lastEpisodeFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.LastEpisodeFragment"
+        android:label="fragment_last_episode"
+        tools:layout="@layout/fragment_last_episode" >
+        <argument
+            android:name="showEpisodeDetailData"
+            app:argType="com.ozanarik.mvvmmovieapp.business.shows_model.ShowDetailModel" />
+    </dialog>
 </navigation>

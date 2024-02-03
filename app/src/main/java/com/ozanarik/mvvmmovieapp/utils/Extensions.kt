@@ -37,5 +37,12 @@ class Extensions {
                 }
             }
         }
+        fun List<Int>.formatEpisodeTime():String{
+            return this.joinToString ( ", " ){ "$it min" }
+        }
+
     }
+
+
+
 }
