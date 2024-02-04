@@ -54,6 +54,15 @@
         tools:layout="@layout/fragment_last_episode" >
         <argument
             android:name="showEpisodeDetailData"
-            app:argType="com.ozanarik.mvvmmovieapp.business.shows_model.ShowDetailModel" />
+            app:argType="com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel" />
     </dialog>
+    <fragment
+        android:id="@+id/moviesByGenreFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.MoviesByGenreFragment"
+        android:label="fragment_movies_by_genre"
+        tools:layout="@layout/fragment_movies_by_genre" >
+        <action
+            android:id="@+id/action_moviesByGenreFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+    </fragment>
 </navigation>

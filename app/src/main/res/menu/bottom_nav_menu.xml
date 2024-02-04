@@ -13,4 +13,10 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_live_tv_24"
         android:title="Shows" />
+    <item
+        android:id="@+id/moviesByGenreFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_category_24"
+        android:title="By Genre" />
 </menu>

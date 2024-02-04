@@ -2,9 +2,11 @@ package com.ozanarik.mvvmmovieapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ozanarik.mvvmmovieapp.business.movie_model.MovieDetailResponse
-import com.ozanarik.mvvmmovieapp.business.movie_model.MovieResponse
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieCreditsModel
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieDetailResponse
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
+import com.ozanarik.mvvmmovieapp.utils.MovieGenreType
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,36 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
 
     private val _detaiedMovieData:MutableStateFlow<Resource<MovieDetailResponse>> = MutableStateFlow(Resource.Loading())
     val detailedMovieData:StateFlow<Resource<MovieDetailResponse>> = _detaiedMovieData
+
+    private val _allMovies:MutableStateFlow<Resource<MovieResponse>> = MutableStateFlow(Resource.Loading())
+    val allMovies:StateFlow<Resource<MovieResponse>> = _allMovies
+
+    private val _creditData:MutableStateFlow<Resource<MovieCreditsModel>> = MutableStateFlow(Resource.Loading())
+    val creditData:StateFlow<Resource<MovieCreditsModel>> = _creditData
+
+    fun getAllMovies()=viewModelScope.launch {
+        _allMovies.value = Resource.Loading()
+
+
+        try {
+
+            val allMoviesResponse = withContext(Dispatchers.IO){
+                movieRepository.getAllMovies()
+            }
+            if (allMoviesResponse.isSuccessful){
+                _allMovies.value = Resource.Success(allMoviesResponse.body()!!)
+            }
+
+
+        }catch (e:Exception){
+            _allMovies.value=Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _allMovies.value=Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+
+    }
 
     fun getTopRatedMovies()=viewModelScope.launch {
 
@@ -114,6 +146,27 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         }
     }
 
+    suspend fun getDetailedMovieDataCredit(movieId:Int){
+        _creditData.value = Resource.Loading()
+
+        try {
+
+            val detailedCreditDataResponse = withContext(Dispatchers.IO){
+                movieRepository.getMovieCastAndCredits(movieId)
+            }
+            if (detailedCreditDataResponse.isSuccessful){
+                _creditData.value =Resource.Success(detailedCreditDataResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _creditData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }catch (e:IOException){
+            _creditData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+
+    }
+
     suspend fun getDetailedMovieData(movieId:Int){
         _detaiedMovieData.value = Resource.Loading()
 
@@ -131,6 +184,39 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         }catch (e:IOException){
             _detaiedMovieData.value = Resource.Error(e.localizedMessage?:e.message!!)
         }
+
+
+    }
+
+
+
+    fun getMovieGenreNames(genreId:Int):String{
+
+        return when(genreId){
+            MovieGenreType.Action.genreId->"Action"
+            MovieGenreType.Adventure.genreId->"Adventure"
+            MovieGenreType.Animation.genreId->"Adventure"
+            MovieGenreType.Comedy.genreId->"Comedy"
+            MovieGenreType.Crime.genreId->"Crime"
+            MovieGenreType.Documentary.genreId->"Documentary"
+            MovieGenreType.Drama.genreId->"Drama"
+            MovieGenreType.Family.genreId->"Family"
+            MovieGenreType.Fantasy.genreId->"Fantasy"
+            MovieGenreType.History.genreId->"History"
+            MovieGenreType.Horror.genreId->"Horror"
+            MovieGenreType.Music.genreId->"Music"
+            MovieGenreType.Mystery.genreId->"Mystery"
+            MovieGenreType.Romance.genreId->"Romance"
+            MovieGenreType.ScienceFiction.genreId->"Science Fiction"
+            MovieGenreType.TvMovie.genreId->"Tv Movie"
+            MovieGenreType.Thriller.genreId->"Thriller"
+            MovieGenreType.War.genreId->"War"
+            MovieGenreType.Western.genreId->"Western"
+
+            else->"N/a"
+
+        }
+
 
 
     }

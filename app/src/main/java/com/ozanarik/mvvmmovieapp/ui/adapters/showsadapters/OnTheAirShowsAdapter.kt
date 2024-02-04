@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ozanarik.mvvmmovieapp.business.shows_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
@@ -56,7 +56,7 @@ class OnTheAirShowsAdapter(private val onItemClickListener: OnItemClickListener)
 
 
     interface OnItemClickListener{
-        fun onItemClick(currentMovieOrShow:Result)
+        fun onItemClick(currentMovieOrShow: Result)
     }
 
 }

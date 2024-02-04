@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ozanarik.mvvmmovieapp.business.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.NowPlayingListItemBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
@@ -52,6 +52,6 @@ class NowPlayingMovieAdapter(private val onItemClickListener: OnItemClickListene
     }
 
     interface OnItemClickListener{
-        fun onItemClick(currentMovieOrShow:Result)
+        fun onItemClick(currentMovieOrShow: Result)
     }
 }

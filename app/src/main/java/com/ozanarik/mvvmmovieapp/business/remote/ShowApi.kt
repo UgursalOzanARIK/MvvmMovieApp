@@ -1,7 +1,7 @@
 package com.ozanarik.mvvmmovieapp.business.remote
 
-import com.ozanarik.mvvmmovieapp.business.shows_model.ShowDetailModel
-import com.ozanarik.mvvmmovieapp.business.shows_model.ShowsResponse
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowsResponse
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.API_KEY
 import retrofit2.Response
 import retrofit2.http.GET

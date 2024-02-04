@@ -1,7 +1,6 @@
 package com.ozanarik.mvvmmovieapp.ui.fragments
 
 import android.app.AlertDialog
-import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,15 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.business.movie_model.MovieResponse
-import com.ozanarik.mvvmmovieapp.business.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.NowPlayingMovieAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.PopularMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.TopRatedMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.UpcomingMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
-import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.setVisibility
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.MovieType
 import com.ozanarik.mvvmmovieapp.utils.Resource
@@ -37,6 +34,8 @@ class MoviesFragment : Fragment() {
     private lateinit var popularMoviesAdapter: PopularMoviesAdapter
     private lateinit var topRatedMoviesAdapter: TopRatedMoviesAdapter
     private lateinit var upcomingMoviesAdapter: UpcomingMoviesAdapter
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,12 +72,21 @@ class MoviesFragment : Fragment() {
 
                         handleFilterDialog(nowPlayingMoviesAdapter,nowPlayingMovieList,"Choose An Option",binding.imageViewNowPlayingFilter)
                         {
-                            nowPlayingMoviesAdapter.asyncDifferList.submitList(nowPlayingMovieList)
+                            nowPlayingMoviesAdapter.asyncDifferList.submitList(it)
                         }
 
 
                         nowPlayingMoviesAdapter.asyncDifferList.submitList(nowPlayingMovieList)
-                        popularMoviesAdapter.notifyDataSetChanged()
+
+                        nowPlayingMovieList.forEach { movie->
+
+                            when(movie.genreIds){
+
+
+                            }
+
+                        }
+
 
                     }
                     is Resource.Error->{
@@ -102,11 +110,10 @@ class MoviesFragment : Fragment() {
 
                         handleFilterDialog(popularMoviesAdapter,popularMoviesList,"Choose An Option",binding.imageViewPopularMoviesFilter)
                         {
-                            popularMoviesAdapter.asyncDifferList.submitList(popularMoviesList)
+                            popularMoviesAdapter.asyncDifferList.submitList(it)
                         }
 
                         popularMoviesAdapter.asyncDifferList.submitList(popularMovieResponse.data.results)
-                        popularMoviesAdapter.notifyDataSetChanged()
                     }
                     is Resource.Error-> {
                         showSnackbar(popularMovieResponse.message!!)
@@ -128,7 +135,7 @@ class MoviesFragment : Fragment() {
 
                         handleFilterDialog(topRatedMoviesAdapter,topRatedMoviesList,"Choose An Option",binding.imageViewTopRatedMoviesFilter)
                         {
-                            topRatedMoviesAdapter.asyncDifferList.submitList(topRatedMoviesList)
+                            topRatedMoviesAdapter.asyncDifferList.submitList(it)
                         }
 
                         topRatedMoviesAdapter.asyncDifferList.submitList(topRatedMoviesResponse.data.results)
@@ -156,11 +163,10 @@ class MoviesFragment : Fragment() {
 
                         handleFilterDialog(upcomingMoviesAdapter,upcomingMoviesList,"Choose An Option",binding.imageViewUpcomingFilter)
                         {
-                                upcomingMoviesAdapter.asyncDifferList.submitList(upcomingMoviesList)
+                                upcomingMoviesAdapter.asyncDifferList.submitList(it)
                         }
 
                         upcomingMoviesAdapter.asyncDifferList.submitList(upcomingMoviesList)
-                        popularMoviesAdapter.notifyDataSetChanged()
 
                     }
                     is Resource.Error->{
@@ -194,7 +200,7 @@ class MoviesFragment : Fragment() {
             })
 
             upcomingMoviesAdapter = UpcomingMoviesAdapter(object : UpcomingMoviesAdapter.OnItemClickListener {
-                override fun onItemClick(currentMovieOrShow:Result) {
+                override fun onItemClick(currentMovieOrShow: Result) {
                     handleNavigation(currentMovieOrShow.id)
                 }
             })

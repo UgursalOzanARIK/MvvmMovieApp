@@ -3,8 +3,8 @@ package com.ozanarik.mvvmmovieapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ozanarik.mvvmmovieapp.business.repository.ShowsRepository
-import com.ozanarik.mvvmmovieapp.business.shows_model.ShowDetailModel
-import com.ozanarik.mvvmmovieapp.business.shows_model.ShowsResponse
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowsResponse
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

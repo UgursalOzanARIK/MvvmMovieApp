@@ -13,9 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.shows_model.Result
-import com.ozanarik.mvvmmovieapp.business.shows_model.ShowsResponse
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentShowsBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.AiringTodayShowsAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.OnTheAirShowsAdapter
@@ -37,6 +35,7 @@ class ShowsFragment : Fragment() {
     private lateinit var popularShowsAdapter: PopularShowsAdapter
     private lateinit var onTheAirShowsAdapter: OnTheAirShowsAdapter
     private lateinit var airingTodayShowsAdapter: AiringTodayShowsAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,7 +44,6 @@ class ShowsFragment : Fragment() {
 
 
         showsViewModel = ViewModelProvider(this)[ShowsViewModel::class.java]
-
 
 
         binding = FragmentShowsBinding.inflate(inflater,container,false)
@@ -57,8 +55,6 @@ class ShowsFragment : Fragment() {
         getAiringTodayShows()
         getOnTheAirShows()
 
-
-
         return binding.root
     }
 
@@ -66,7 +62,6 @@ class ShowsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         getTopRatedShows()
     }
-
 
 
     private fun getOnTheAirShows(){

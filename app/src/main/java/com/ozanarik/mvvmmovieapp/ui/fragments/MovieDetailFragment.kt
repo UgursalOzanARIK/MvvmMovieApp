@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,9 @@ import java.text.DecimalFormat
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
     private lateinit var movieViewModel: MovieViewModel
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,8 +41,12 @@ class MovieDetailFragment : Fragment() {
         movieViewModel = ViewModelProvider(this)[MovieViewModel::class.java]
 
 
+
+
+
         handleMovieArgs()
 
+        getMovieCredit()
 
 
         return binding.root
@@ -49,10 +57,10 @@ class MovieDetailFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun handleMovieArgs(){
 
+
         val movieArgs:MovieDetailFragmentArgs by navArgs()
 
         val movieData = movieArgs.movieData
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             movieViewModel.getDetailedMovieData(movieData)
@@ -110,4 +118,63 @@ class MovieDetailFragment : Fragment() {
             }
         }
     }
+
+
+    private fun getMovieCredit(){
+        val movieArgs:MovieDetailFragmentArgs by navArgs()
+
+        val movieData = movieArgs.movieData
+
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            movieViewModel.getDetailedMovieDataCredit(movieData)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            movieViewModel.creditData.collect{creditData->
+                when(creditData){
+                    is Resource.Success->{
+
+
+                        val cast = creditData.data!!.cast
+                        val crew = creditData.data.crew
+
+                        crew.forEach { castData->
+                            Log.e("crewname",castData.name)
+                            Log.e("creworiginalName",castData.originalName)
+                            Log.e("crewknownForDepartment",castData.knownForDepartment)
+                            Log.e("crewgender",castData.gender.toString())
+
+                            Log.e("asd",castData.profilePath.toString())
+
+
+                        }
+
+
+                        cast.forEach { castData->
+                            Log.e("character",castData.character)
+                            Log.e("name",castData.name)
+                            Log.e("originalName",castData.originalName)
+                            Log.e("knownForDepartment",castData.knownForDepartment)
+                            Log.e("gender",castData.gender.toString())
+
+
+                        }
+
+
+
+
+                    }
+                    is Resource.Error->{
+                        Log.e("asd","error")
+                    }
+                    is Resource.Loading->{
+                        Log.e("asd","loading")
+                    }
+                }
+            }
+        }
+    }
+
+
 }

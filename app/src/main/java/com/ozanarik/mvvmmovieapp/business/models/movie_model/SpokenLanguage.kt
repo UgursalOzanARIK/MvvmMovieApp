@@ -1,4 +1,4 @@
-package com.ozanarik.mvvmmovieapp.business.shows_model
+package com.ozanarik.mvvmmovieapp.business.models.movie_model
 
 
 import com.google.gson.annotations.SerializedName
