@@ -12,8 +12,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
 import com.ozanarik.mvvmmovieapp.databinding.FragmentDetailBinding
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.MovieYoutubeTrailerAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.getHoursAndMinutes
@@ -29,6 +32,8 @@ class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
     private lateinit var movieViewModel: MovieViewModel
 
+    private lateinit var movieYoutubeTrailerAdapter: MovieYoutubeTrailerAdapter
+    private lateinit var movieCreditAdapter: MovieCreditAdapter
 
 
     override fun onCreateView(
@@ -45,11 +50,50 @@ class MovieDetailFragment : Fragment() {
 
 
         handleMovieArgs()
+        handleRv()
+        getMovieYoutubeTrailer()
 
         getMovieCredit()
 
 
         return binding.root
+    }
+
+
+
+    private fun getMovieYoutubeTrailer(){
+
+        val movieArgs:MovieDetailFragmentArgs by navArgs()
+
+        val movieData = movieArgs.movieData
+
+        movieViewModel.getMovieTrailer(movieData)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            movieViewModel.movieTrailerData.collect{movieTrailerResponse->
+                when(movieTrailerResponse){
+                    is Resource.Success->{
+
+
+                        Log.e("youtubekey",movieTrailerResponse.data!!.results.first().key)
+
+                        movieYoutubeTrailerAdapter.asyncDifferList.submitList(movieTrailerResponse.data!!.results)
+
+                    }
+                    is Resource.Error->{
+                        Log.e("asd","error")
+                    }
+                    is Resource.Loading->{
+                        Log.e("asd","loading")
+                    }
+                }
+            }
+
+        }
+
+
+
     }
 
 
@@ -88,9 +132,11 @@ class MovieDetailFragment : Fragment() {
                         }
                         val (hours,minutes) = getHoursAndMinutes(detailedMovieResponse.data.runtime)
                         binding.tvRunTime.text = "$hours h / $minutes min"
-
                         binding.tvTagline.text = " \"${detailedMovieResponse.data.tagline}\" "
 
+                        val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}
+
+                        binding.tvGenre.text = genreNames
 
 
 
@@ -135,34 +181,14 @@ class MovieDetailFragment : Fragment() {
                 when(creditData){
                     is Resource.Success->{
 
+                        val maxActorsAndActresses = 4
 
-                        val cast = creditData.data!!.cast
-                        val crew = creditData.data.crew
+                        val cast = creditData.data!!.cast.take(maxActorsAndActresses).joinToString(", "){it.name}
 
-                        crew.forEach { castData->
-                            Log.e("crewname",castData.name)
-                            Log.e("creworiginalName",castData.originalName)
-                            Log.e("crewknownForDepartment",castData.knownForDepartment)
-                            Log.e("crewgender",castData.gender.toString())
-
-                            Log.e("asd",castData.profilePath.toString())
+                        binding.tvCast.text = "Cast : $cast"
 
 
-                        }
-
-
-                        cast.forEach { castData->
-                            Log.e("character",castData.character)
-                            Log.e("name",castData.name)
-                            Log.e("originalName",castData.originalName)
-                            Log.e("knownForDepartment",castData.knownForDepartment)
-                            Log.e("gender",castData.gender.toString())
-
-
-                        }
-
-
-
+                        movieCreditAdapter.asyncDifferList.submitList(creditData.data.cast)
 
                     }
                     is Resource.Error->{
@@ -174,6 +200,26 @@ class MovieDetailFragment : Fragment() {
                 }
             }
         }
+    }
+
+
+    private fun handleRv(){
+        movieCreditAdapter = MovieCreditAdapter()
+        movieYoutubeTrailerAdapter = MovieYoutubeTrailerAdapter()
+
+        binding.apply {
+
+            rvCast.adapter = movieCreditAdapter
+            rvCast.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            rvCast.setHasFixedSize(true)
+
+            rvMovieYoutubeTrailer.adapter = movieYoutubeTrailerAdapter
+            rvMovieYoutubeTrailer.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            rvMovieYoutubeTrailer.setHasFixedSize(true)
+
+
+        }
+
     }
 
 

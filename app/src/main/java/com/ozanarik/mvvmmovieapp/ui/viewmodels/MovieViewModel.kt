@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieCreditsModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieDetailResponse
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieYoutubeTrailerModel
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.ResultX
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
 import com.ozanarik.mvvmmovieapp.utils.MovieGenreType
 import com.ozanarik.mvvmmovieapp.utils.Resource
@@ -42,9 +44,35 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
     private val _creditData:MutableStateFlow<Resource<MovieCreditsModel>> = MutableStateFlow(Resource.Loading())
     val creditData:StateFlow<Resource<MovieCreditsModel>> = _creditData
 
+    private val _movieTrailerData:MutableStateFlow<Resource<MovieYoutubeTrailerModel>> = MutableStateFlow(Resource.Loading())
+    val movieTrailerData:StateFlow<Resource<MovieYoutubeTrailerModel>> = _movieTrailerData
+
+    fun getMovieTrailer(movieId: Int)=viewModelScope.launch {
+
+        _movieTrailerData.value = Resource.Loading()
+
+        try {
+
+            val movieTrailerResponse = withContext(Dispatchers.IO){
+                movieRepository.getMovieTrailer(movieId)
+            }
+
+            if (movieTrailerResponse.isSuccessful){
+                _movieTrailerData.value = Resource.Success(movieTrailerResponse.body()!!)
+            }
+
+
+        }catch (e:Exception){
+            _movieTrailerData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _movieTrailerData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+    }
+
     fun getAllMovies()=viewModelScope.launch {
         _allMovies.value = Resource.Loading()
-
 
         try {
 

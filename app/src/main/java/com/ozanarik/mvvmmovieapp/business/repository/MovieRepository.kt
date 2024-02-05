@@ -18,11 +18,11 @@ class MovieRepository @Inject constructor(private val movieApi: MovieApi) {
 
     suspend fun getMovieDetail(movieId:Int)=movieApi.getMovieDetail(movieId)
 
-
     suspend fun getAllMovies()=movieApi.getAllMovies()
 
-
     suspend fun getMovieCastAndCredits(movieId: Int)=movieApi.getMovieCastAndCredits(movieId)
+
+    suspend fun getMovieTrailer(movieId: Int)=movieApi.getMovieTrailer(movieId)
 
 
 }

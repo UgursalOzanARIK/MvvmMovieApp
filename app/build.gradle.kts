@@ -80,5 +80,4 @@ dependencies {
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
-
 }
