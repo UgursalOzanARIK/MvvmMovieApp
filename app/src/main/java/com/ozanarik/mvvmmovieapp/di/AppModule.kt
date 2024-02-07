@@ -1,8 +1,10 @@
 package com.ozanarik.mvvmmovieapp.di
 
 import com.ozanarik.mvvmmovieapp.business.remote.MovieApi
+import com.ozanarik.mvvmmovieapp.business.remote.PeopleApi
 import com.ozanarik.mvvmmovieapp.business.remote.ShowApi
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
+import com.ozanarik.mvvmmovieapp.business.repository.PopularPeopleRepository
 import com.ozanarik.mvvmmovieapp.business.repository.ShowsRepository
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.BASE_URL
 import dagger.Module
@@ -13,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -66,6 +69,18 @@ class AppModule {
     @Singleton
     fun provideShowsRepository(showApi: ShowApi):ShowsRepository{
         return ShowsRepository(showApi)
+    }
+
+    @Provides
+    @Singleton
+    fun providePeopleApi(retrofit: Retrofit):PeopleApi{
+        return retrofit.create(PeopleApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePeopleRepository(peopleApi: PeopleApi):PopularPeopleRepository{
+        return PopularPeopleRepository(peopleApi)
     }
 
 }

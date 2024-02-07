@@ -3,6 +3,7 @@ package com.ozanarik.mvvmmovieapp.business.remote
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieCreditsModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieDetailResponse
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieReviewModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieYoutubeTrailerModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.ResultX
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.API_KEY
@@ -40,6 +41,21 @@ interface MovieApi {
         @Path("movie_id")movie_id:Int,
         @Query("api_key")api_key:String = API_KEY
     ):Response<MovieYoutubeTrailerModel>
+
+    @GET("/3/movie/{movie_id}/reviews")
+    suspend fun getMovieReviews(
+        @Path("movie_id")movie_id: Int,
+        @Query("api_key")api_key: String= API_KEY
+    ):Response<MovieReviewModel>
+
+    @GET("/3/movie/{movie_id}/similar")
+    suspend fun getSimilarMovies(
+        @Path("movie_id")movie_id: Int,
+        @Query("api_key")api_key: String= API_KEY
+    ):Response<MovieResponse>
+
+
+
 
 
 

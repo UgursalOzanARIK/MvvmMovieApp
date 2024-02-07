@@ -34,6 +34,12 @@
         <argument
             android:name="movieData"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_movieDetailFragment_to_movieReviewsBottomSheetFragment"
+            app:destination="@id/movieReviewsBottomSheetFragment" />
+        <action
+            android:id="@+id/action_movieDetailFragment_to_similarMovieDetailFragment"
+            app:destination="@id/similarMovieDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/showDetailFragment"
@@ -65,4 +71,36 @@
             android:id="@+id/action_moviesByGenreFragment_to_movieDetailFragment"
             app:destination="@id/movieDetailFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/movieReviewsBottomSheetFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.MovieReviewsBottomSheetFragment"
+        android:label="fragment_movie_reviews_bottom_sheet"
+        tools:layout="@layout/fragment_movie_reviews_bottom_sheet" >
+        <argument
+            android:name="movieData"
+            app:argType="integer" />
+    </dialog>
+    <fragment
+        android:id="@+id/popularPeopleFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.PopularPeopleFragment"
+        android:label="fragment_popular_people"
+        tools:layout="@layout/fragment_popular_people" >
+        <action
+            android:id="@+id/action_popularPeopleFragment_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/popularPeopleDetailFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.PopularPeopleDetailFragment"
+        android:label="fragment_popular_people_detail"
+        tools:layout="@layout/fragment_popular_people_detail" >
+        <argument
+            android:name="personData"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/similarMovieDetailFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.SimilarMovieDetailFragment"
+        android:label="fragment_similar_movie_detail"
+        tools:layout="@layout/fragment_similar_movie_detail" />
 </navigation>

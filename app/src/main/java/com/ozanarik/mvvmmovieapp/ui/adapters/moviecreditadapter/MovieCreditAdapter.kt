@@ -11,7 +11,7 @@ import com.ozanarik.mvvmmovieapp.databinding.MovieCreditItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
 
-class MovieCreditAdapter:RecyclerView.Adapter<MovieCreditAdapter.MovieCreditHolder>() {
+class MovieCreditAdapter (private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<MovieCreditAdapter.MovieCreditHolder>() {
 
 
     inner class MovieCreditHolder(val binding: MovieCreditItemListBinding):RecyclerView.ViewHolder(binding.root)
@@ -45,9 +45,19 @@ class MovieCreditAdapter:RecyclerView.Adapter<MovieCreditAdapter.MovieCreditHold
             Picasso.get().load(IMAGE_BASE_URL + currentCast.profilePath).placeholder(R.drawable.placeholder).error(R.drawable.baseline_error_24).into(imageViewCastPath)
 
         }
+
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onPersonClick(currentCast)
+        }
+
     }
 
     override fun getItemCount(): Int {
         return asyncDifferList.currentList.size
     }
+
+    interface OnItemClickListener{
+        fun onPersonClick(currentPerson:Cast)
+    }
+
 }

@@ -19,4 +19,10 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_category_24"
         android:title="By Genre" />
+    <item
+        android:id="@+id/popularPeopleFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_person_24"
+        android:title="Popular People" />
 </menu>

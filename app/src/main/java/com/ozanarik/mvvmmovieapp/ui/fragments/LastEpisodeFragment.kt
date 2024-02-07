@@ -60,25 +60,7 @@ class LastEpisodeFragment : BottomSheetDialogFragment() {
                 val decimalFormat= DecimalFormat("#.##")
                 tvVoteAverageDetail.text = "Imdb Vote Average : ${decimalFormat.format(showEpisodeDetail.voteAverage)}"
                 tvOverViewDetail.text = showEpisodeDetail.overview
-
-
-
-
         }
-
-
-        val productionCountries = showEpisodeDetail.productionCountries
-
-
-
-        for (country in productionCountries){
-
-            Log.e("asd",country.toString())
-
-        }
-
-
-
     }
 
 

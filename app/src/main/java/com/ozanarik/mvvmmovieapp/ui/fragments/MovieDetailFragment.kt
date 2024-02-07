@@ -3,22 +3,30 @@ package com.ozanarik.mvvmmovieapp.ui.fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebSettings
+import android.webkit.WebViewClient
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentDetailBinding
-import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.MovieYoutubeTrailerAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.SimilarMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
+import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.YOUTUBE_TRAILER_BASE_URL
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.getHoursAndMinutes
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
@@ -32,10 +40,11 @@ class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
     private lateinit var movieViewModel: MovieViewModel
 
-    private lateinit var movieYoutubeTrailerAdapter: MovieYoutubeTrailerAdapter
     private lateinit var movieCreditAdapter: MovieCreditAdapter
+    private lateinit var similarMoviesAdapter: SimilarMoviesAdapter
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,21 +55,79 @@ class MovieDetailFragment : Fragment() {
         movieViewModel = ViewModelProvider(this)[MovieViewModel::class.java]
 
 
-
-
-
         handleMovieArgs()
         handleRv()
+
         getMovieYoutubeTrailer()
 
         getMovieCredit()
+
+        handleReviewFragmentNavigation()
+
+
+        getSimilarMovies()
+
+
+
 
 
         return binding.root
     }
 
 
+    private fun handleReviewFragmentNavigation(){
 
+        val movieArgs:MovieDetailFragmentArgs by navArgs()
+
+        val movieData = movieArgs.movieData
+        binding.tvReviews.setOnClickListener {
+
+
+
+            val bundle = Bundle().apply {
+                putInt("movieData",movieData)
+            }
+
+            val movieReviewFragment = MovieReviewsBottomSheetFragment()
+            movieReviewFragment.arguments = bundle
+
+
+            movieReviewFragment.show(childFragmentManager,movieReviewFragment.tag)
+
+        }
+    }
+
+    private fun getSimilarMovies(){
+
+        val movieArgs:MovieDetailFragmentArgs by navArgs()
+
+        val movieData = movieArgs.movieData
+
+        movieViewModel.getSimilarMovies(movieData)
+        viewLifecycleOwner.lifecycleScope.launch {
+            movieViewModel.similarMovieData.collect{similarMovieResponse->
+                when(similarMovieResponse){
+                    is Resource.Success->{
+
+                        similarMoviesAdapter.asyncDifferList.submitList(similarMovieResponse.data!!.results)
+
+
+                    }
+                    is Resource.Error->{
+                        showSnackbar(similarMovieResponse.message!!)
+                    }
+                    is Resource.Loading->{
+                        showSnackbar("Fetching Data")
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getMovieYoutubeTrailer(){
 
         val movieArgs:MovieDetailFragmentArgs by navArgs()
@@ -78,8 +145,20 @@ class MovieDetailFragment : Fragment() {
 
                         Log.e("youtubekey",movieTrailerResponse.data!!.results.first().key)
 
-                        movieYoutubeTrailerAdapter.asyncDifferList.submitList(movieTrailerResponse.data!!.results)
 
+                        binding.webViewYt.apply {
+
+                            clearHistory()
+                            clearCache(true)
+                            settings.domStorageEnabled = true
+                            settings.javaScriptEnabled = true
+
+                            webViewClient = WebViewClient()
+                            settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                            isNestedScrollingEnabled = true
+                            loadUrl(YOUTUBE_TRAILER_BASE_URL + movieTrailerResponse.data.results[0].key)
+
+                        }
                     }
                     is Resource.Error->{
                         Log.e("asd","error")
@@ -89,14 +168,8 @@ class MovieDetailFragment : Fragment() {
                     }
                 }
             }
-
         }
-
-
-
     }
-
-
 
     @SuppressLint("SetTextI18n")
     private fun handleMovieArgs(){
@@ -151,8 +224,6 @@ class MovieDetailFragment : Fragment() {
                             val intentChooser = Intent.createChooser(intent,"Choose Action")
 
                             startActivity(intentChooser)
-
-
                         }
                     }
                     is Resource.Error->{
@@ -202,10 +273,40 @@ class MovieDetailFragment : Fragment() {
         }
     }
 
-
     private fun handleRv(){
-        movieCreditAdapter = MovieCreditAdapter()
-        movieYoutubeTrailerAdapter = MovieYoutubeTrailerAdapter()
+        movieCreditAdapter = MovieCreditAdapter(object : MovieCreditAdapter.OnItemClickListener {
+            override fun onPersonClick(currentPerson: Cast) {
+
+                val bundle = Bundle().apply {
+                    putInt("personData",currentPerson.id)
+                }
+
+                val personDetailFragment = PopularPeopleDetailFragment()
+                personDetailFragment.arguments = bundle
+
+
+                personDetailFragment.show(requireActivity().supportFragmentManager,PopularPeopleDetailFragment().tag)
+
+
+            }
+        })
+
+        similarMoviesAdapter = SimilarMoviesAdapter(object : SimilarMoviesAdapter.OnItemClickListener {
+            override fun onSimilarMovieClick(currentSimilarMovie: Result) {
+
+                val bundle = Bundle().apply {
+                    putInt("movieData",currentSimilarMovie.id)
+                }
+
+                val similarMovieDetailFragment = SimilarMovieDetailFragment()
+                similarMovieDetailFragment.arguments = bundle
+
+                similarMovieDetailFragment.show(requireActivity().supportFragmentManager,similarMovieDetailFragment.tag)
+
+
+
+            }
+        })
 
         binding.apply {
 
@@ -213,14 +314,15 @@ class MovieDetailFragment : Fragment() {
             rvCast.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
             rvCast.setHasFixedSize(true)
 
-            rvMovieYoutubeTrailer.adapter = movieYoutubeTrailerAdapter
-            rvMovieYoutubeTrailer.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
-            rvMovieYoutubeTrailer.setHasFixedSize(true)
+
+            rvSimilarMovies.adapter = similarMoviesAdapter
+            rvSimilarMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            rvSimilarMovies.setHasFixedSize(true)
+
 
 
         }
 
     }
-
 
 }

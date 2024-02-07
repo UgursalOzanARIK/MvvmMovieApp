@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieCreditsModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieDetailResponse
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieReviewModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieYoutubeTrailerModel
 import com.ozanarik.mvvmmovieapp.business.models.movie_model.ResultX
 import com.ozanarik.mvvmmovieapp.business.repository.MovieRepository
@@ -46,6 +47,57 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
 
     private val _movieTrailerData:MutableStateFlow<Resource<MovieYoutubeTrailerModel>> = MutableStateFlow(Resource.Loading())
     val movieTrailerData:StateFlow<Resource<MovieYoutubeTrailerModel>> = _movieTrailerData
+
+    private val _movieReviewsData:MutableStateFlow<Resource<MovieReviewModel>> = MutableStateFlow(Resource.Loading())
+    val movieReviewsData:StateFlow<Resource<MovieReviewModel>> = _movieReviewsData
+
+    private val _similarMovieData:MutableStateFlow<Resource<MovieResponse>> = MutableStateFlow(Resource.Loading())
+    val similarMovieData:StateFlow<Resource<MovieResponse>> = _similarMovieData
+
+
+
+    fun getSimilarMovies(movieId: Int)=viewModelScope.launch {
+
+        _similarMovieData.value = Resource.Loading()
+
+        try {
+            val similarMovieResponse = withContext(Dispatchers.IO){
+                movieRepository.getSimilarMovies(movieId)
+            }
+            if (similarMovieResponse.isSuccessful){
+                _similarMovieData.value = Resource.Success(similarMovieResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _similarMovieData.value = Resource.Error(e.message?:e.localizedMessage!!)
+
+        }catch (e:IOException){
+            _similarMovieData.value = Resource.Error(e.message?:e.localizedMessage!!)
+        }
+
+    }
+
+    fun getMovieReviews(movieId: Int)=viewModelScope.launch {
+        _movieReviewsData.value = Resource.Loading()
+
+        try {
+
+            val movieReviewsData = withContext(Dispatchers.IO){
+                movieRepository.getMovieReviews(movieId)
+            }
+            if (movieReviewsData.isSuccessful){
+                _movieReviewsData.value = Resource.Success(movieReviewsData.body()!!)
+            }
+
+        }catch (e:Exception){
+            _movieReviewsData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _movieReviewsData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+
+    }
 
     fun getMovieTrailer(movieId: Int)=viewModelScope.launch {
 

@@ -24,5 +24,9 @@ class MovieRepository @Inject constructor(private val movieApi: MovieApi) {
 
     suspend fun getMovieTrailer(movieId: Int)=movieApi.getMovieTrailer(movieId)
 
+    suspend fun getMovieReviews(movieId: Int)=movieApi.getMovieReviews(movieId)
+
+    suspend fun getSimilarMovies(movieId: Int)=movieApi.getSimilarMovies(movieId)
+
 
 }
