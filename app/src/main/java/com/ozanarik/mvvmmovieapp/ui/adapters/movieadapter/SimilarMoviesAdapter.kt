@@ -53,6 +53,6 @@ class SimilarMoviesAdapter (private val onItemClickListener: OnItemClickListener
     }
 
     interface OnItemClickListener{
-        fun onSimilarMovieClick(currentSimilarMovie:Result)
+        fun onSimilarMovieClick(currentSimilarMovie:Result?)
     }
 }

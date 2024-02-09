@@ -12,4 +12,7 @@ class PopularPeopleRepository @Inject constructor(private val peopleApi: PeopleA
 
     suspend fun getPersonDetail(person_id:Int)=peopleApi.getPersonDetail(person_id)
 
+    suspend fun getPersonRelatedMovies(movieId: Int)=peopleApi.getPersonRelatedMovies(movieId)
+
+
 }

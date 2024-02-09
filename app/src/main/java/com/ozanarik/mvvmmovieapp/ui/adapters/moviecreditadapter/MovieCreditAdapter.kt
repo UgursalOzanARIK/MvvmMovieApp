@@ -13,7 +13,6 @@ import com.squareup.picasso.Picasso
 
 class MovieCreditAdapter (private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<MovieCreditAdapter.MovieCreditHolder>() {
 
-
     inner class MovieCreditHolder(val binding: MovieCreditItemListBinding):RecyclerView.ViewHolder(binding.root)
 
     private val diffUtil = object : DiffUtil.ItemCallback<Cast>(){

@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_movieDetailFragment_to_similarMovieDetailFragment"
             app:destination="@id/similarMovieDetailFragment" />
+        <action
+            android:id="@+id/action_movieDetailFragment_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/showDetailFragment"
@@ -88,6 +91,9 @@
         <action
             android:id="@+id/action_popularPeopleFragment_to_popularPeopleDetailFragment"
             app:destination="@id/popularPeopleDetailFragment" />
+        <action
+            android:id="@+id/action_popularPeopleFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/popularPeopleDetailFragment"
@@ -97,10 +103,35 @@
         <argument
             android:name="personData"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_popularPeopleDetailFragment_to_castRelatedMovies"
+            app:destination="@id/castRelatedMovies" />
     </fragment>
     <fragment
         android:id="@+id/similarMovieDetailFragment"
         android:name="com.ozanarik.mvvmmovieapp.ui.fragments.SimilarMovieDetailFragment"
         android:label="fragment_similar_movie_detail"
-        tools:layout="@layout/fragment_similar_movie_detail" />
+        tools:layout="@layout/fragment_similar_movie_detail" >
+        <action
+            android:id="@+id/action_similarMovieDetailFragment_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/castRelatedMovies"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.CastRelatedMovies"
+        android:label="fragment_cast_related_movies"
+        tools:layout="@layout/fragment_cast_related_movies" >
+        <argument
+            android:name="movieData"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_castRelatedMovies_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+        <action
+            android:id="@+id/action_castRelatedMovies_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
+        <action
+            android:id="@+id/action_castRelatedMovies_to_similarMovieDetailFragment"
+            app:destination="@id/similarMovieDetailFragment" />
+    </fragment>
 </navigation>

@@ -2,7 +2,9 @@ package com.ozanarik.mvvmmovieapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.PopularPeopleModel
+import com.ozanarik.mvvmmovieapp.business.models.people_model.people_related_movies.PersonRelatedMoviesResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.persondetail.PersonDetailResponse
 import com.ozanarik.mvvmmovieapp.business.repository.PopularPeopleRepository
 import com.ozanarik.mvvmmovieapp.utils.Resource
@@ -27,7 +29,29 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
     private val _personDetail:MutableStateFlow<Resource<PersonDetailResponse>> = MutableStateFlow(Resource.Loading())
     val personDetail:StateFlow<Resource<PersonDetailResponse>> = _personDetail
 
+    private val _personRelatedMovie:MutableStateFlow<Resource<PersonRelatedMoviesResponse>> = MutableStateFlow(Resource.Loading())
+    val personRelatedMovie:StateFlow<Resource<PersonRelatedMoviesResponse>> = _personRelatedMovie
 
+    fun getPersonRelatedMovies(movie_id:Int)=viewModelScope.launch {
+
+        _personRelatedMovie.value = Resource.Loading()
+        try {
+
+            val personRelatedMovieResponse = withContext(Dispatchers.IO){
+                peopleRepository.getPersonRelatedMovies(movie_id)
+            }
+            if (personRelatedMovieResponse.isSuccessful){
+                _personRelatedMovie.value = Resource.Success(personRelatedMovieResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _personRelatedMovie.value = Resource.Error(e.message?:e.localizedMessage!!)
+
+        }catch (e:IOException){
+            _personRelatedMovie.value = Resource.Error(e.message?:e.localizedMessage!!)
+        }
+
+    }
 
     fun getPersonDetail(person_id:Int)=viewModelScope.launch {
 
@@ -49,11 +73,7 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
         }catch (e:IOException){
             _personDetail.value = Resource.Error(e.message?:e.localizedMessage!!)
         }
-
-
     }
-
-
 
     fun searchPopularPerson(query:String)=viewModelScope.launch {
 
@@ -75,11 +95,7 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
         }catch (e:IOException){
             _searchedPerson.value = Resource.Error(e.message?:e.localizedMessage!!)
         }
-
-
     }
-
-
 
     fun getPopularPeople() = viewModelScope.launch {
 
@@ -94,17 +110,11 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
                 _popularPeopleList.value = Resource.Success(popularPeopleListResponse.body()!!)
             }
 
-
         }catch (e:Exception){
             _popularPeopleList.value = Resource.Error(e.message?:e.localizedMessage!!)
 
         }catch (e:IOException){
             _popularPeopleList.value = Resource.Error(e.message?:e.localizedMessage!!)
         }
-
-
     }
-
-
-
 }

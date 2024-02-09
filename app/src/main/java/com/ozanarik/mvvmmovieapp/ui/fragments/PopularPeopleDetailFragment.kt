@@ -3,16 +3,24 @@ package com.ozanarik.mvvmmovieapp.ui.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ozanarik.mvvmmovieapp.R
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentPopularPeopleDetailBinding
+import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.TopRatedMoviesAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
+import com.ozanarik.mvvmmovieapp.ui.adapters.peopleadapter.PopularPeopleRelatedMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.PeopleViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
@@ -23,9 +31,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PopularPeopleDetailFragment : BottomSheetDialogFragment() {
+class PopularPeopleDetailFragment : Fragment() {
     private lateinit var binding:FragmentPopularPeopleDetailBinding
     private lateinit var peopleViewModel: PeopleViewModel
+
+    private lateinit var popularPeopleRelatedMoviesAdapter: PopularPeopleRelatedMoviesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +46,10 @@ class PopularPeopleDetailFragment : BottomSheetDialogFragment() {
         peopleViewModel=ViewModelProvider(this)[PeopleViewModel::class.java]
         binding = FragmentPopularPeopleDetailBinding.inflate(inflater,container,false)
 
-        handleView()
+        handlePopularPersonDetail()
+        handlePersonRelatedMoviesRv()
+
+        getPersonRelatedMovies()
 
 
 
@@ -44,8 +57,38 @@ class PopularPeopleDetailFragment : BottomSheetDialogFragment() {
     }
 
 
+    private fun getPersonRelatedMovies(){
+        val personArgs:PopularPeopleDetailFragmentArgs by navArgs()
 
-    private fun handleView(){
+        val personData = personArgs.personData
+
+        peopleViewModel.getPersonRelatedMovies(personData)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            peopleViewModel.personRelatedMovie.collect{personRelatedMovieResponse->
+
+                when(personRelatedMovieResponse){
+                    is Resource.Success->{
+
+                        popularPeopleRelatedMoviesAdapter.asyncDifferList.submitList(personRelatedMovieResponse.data!!.cast)
+
+                    }
+                    is Resource.Error->{
+                        showSnackbar(personRelatedMovieResponse.message!!)
+                    }
+                    is Resource.Loading->{
+                        showSnackbar("Fetching Data")
+                    }
+                }
+
+            }
+        }
+
+    }
+
+
+
+    private fun handlePopularPersonDetail(){
 
         val personArgs:PopularPeopleDetailFragmentArgs by navArgs()
 
@@ -110,13 +153,20 @@ class PopularPeopleDetailFragment : BottomSheetDialogFragment() {
             }
         }
 
+    }
+
+    private fun handlePersonRelatedMoviesRv(){
+        popularPeopleRelatedMoviesAdapter = PopularPeopleRelatedMoviesAdapter(object : PopularPeopleRelatedMoviesAdapter.OnItemClickListener {
+            override fun onPersonRelatedMoviesClick(currentPersonRelatedMovie: com.ozanarik.mvvmmovieapp.business.models.people_model.people_related_movies.Cast) {
+                val movieToPass = PopularPeopleDetailFragmentDirections.actionPopularPeopleDetailFragmentToCastRelatedMovies(movieData = currentPersonRelatedMovie.id)
+                findNavController().navigate(movieToPass)
+            }
+        })
+
         binding.apply {
-
-
-
-
-
-
+            rvPopularPeopleMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            rvPopularPeopleMovies.setHasFixedSize(true)
+            rvPopularPeopleMovies.adapter = popularPeopleRelatedMoviesAdapter
         }
     }
 

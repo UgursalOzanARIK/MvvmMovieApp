@@ -143,21 +143,24 @@ class MovieDetailFragment : Fragment() {
                     is Resource.Success->{
 
 
-                        Log.e("youtubekey",movieTrailerResponse.data!!.results.first().key)
 
-
-                        binding.webViewYt.apply {
-
+                        binding?.webViewYt?.apply {
                             clearHistory()
                             clearCache(true)
                             settings.domStorageEnabled = true
                             settings.javaScriptEnabled = true
-
                             webViewClient = WebViewClient()
                             settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
                             isNestedScrollingEnabled = true
-                            loadUrl(YOUTUBE_TRAILER_BASE_URL + movieTrailerResponse.data.results[0].key)
 
+                            val trailerKey = movieTrailerResponse?.data?.results?.firstOrNull()?.key
+                            if (!trailerKey.isNullOrEmpty()) {
+                                val url = "$YOUTUBE_TRAILER_BASE_URL$trailerKey"
+                                loadUrl(url)
+                            } else {
+                                // Handle the case where the list is empty or the trailer key is null or empty
+                                // For example, you can load a default URL or show an error message
+                            }
                         }
                     }
                     is Resource.Error->{
@@ -210,6 +213,12 @@ class MovieDetailFragment : Fragment() {
                         val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}
 
                         binding.tvGenre.text = genreNames
+
+                        val productionCompanies = detailedMovieResponse.data.productionCompanies.joinToString(", "){it.name}
+                        val productionCountries = detailedMovieResponse.data.productionCountries.joinToString(", "){it.name}
+
+                        binding.tvProductionCompanies.text = "Production Companies : $productionCompanies"
+                        binding.tvProductionCountries.text = "Production Countries : $productionCountries"
 
 
 
@@ -277,34 +286,26 @@ class MovieDetailFragment : Fragment() {
         movieCreditAdapter = MovieCreditAdapter(object : MovieCreditAdapter.OnItemClickListener {
             override fun onPersonClick(currentPerson: Cast) {
 
+                Log.e("asd",currentPerson.id.toString())
+
                 val bundle = Bundle().apply {
                     putInt("personData",currentPerson.id)
                 }
 
-                val personDetailFragment = PopularPeopleDetailFragment()
-                personDetailFragment.arguments = bundle
-
-
-                personDetailFragment.show(requireActivity().supportFragmentManager,PopularPeopleDetailFragment().tag)
+                findNavController().navigate(R.id.action_movieDetailFragment_to_popularPeopleDetailFragment,bundle)
 
 
             }
         })
 
         similarMoviesAdapter = SimilarMoviesAdapter(object : SimilarMoviesAdapter.OnItemClickListener {
-            override fun onSimilarMovieClick(currentSimilarMovie: Result) {
+            override fun onSimilarMovieClick(currentSimilarMovie: Result?) {
 
                 val bundle = Bundle().apply {
-                    putInt("movieData",currentSimilarMovie.id)
+                    putInt("movieData",currentSimilarMovie!!.id)
                 }
 
-                val similarMovieDetailFragment = SimilarMovieDetailFragment()
-                similarMovieDetailFragment.arguments = bundle
-
-                similarMovieDetailFragment.show(requireActivity().supportFragmentManager,similarMovieDetailFragment.tag)
-
-
-
+                findNavController().navigate(R.id.action_movieDetailFragment_to_similarMovieDetailFragment,bundle)
             }
         })
 
@@ -318,8 +319,6 @@ class MovieDetailFragment : Fragment() {
             rvSimilarMovies.adapter = similarMoviesAdapter
             rvSimilarMovies.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
             rvSimilarMovies.setHasFixedSize(true)
-
-
 
         }
 

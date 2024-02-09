@@ -15,6 +15,7 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
 import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.Result
@@ -107,11 +108,7 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
                     putInt("personData",currentPerson.id)
                 }
 
-                val popularPeopleDetailFragment = PopularPeopleDetailFragment()
-
-                popularPeopleDetailFragment.arguments = bundle
-
-                popularPeopleDetailFragment.show(requireActivity().supportFragmentManager,PopularPeopleDetailFragment().tag)
+                findNavController().navigate(R.id.action_popularPeopleFragment_to_popularPeopleDetailFragment,bundle)
 
 
             }

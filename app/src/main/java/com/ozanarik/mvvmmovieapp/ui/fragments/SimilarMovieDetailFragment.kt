@@ -12,6 +12,7 @@ import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -54,7 +55,6 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
         getMovieCredit()
         handleMovieArgs()
         handleReviewFragmentNavigation()
-        getMovieYoutubeTrailer()
 
 
         return binding.root
@@ -101,6 +101,15 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
 
                         binding.tvGenreBottomSheet.text = genreNames
 
+                        val productionCompanies = detailedMovieResponse.data.productionCompanies.joinToString(", "){it.name}
+                        val productionCountries = detailedMovieResponse.data.productionCountries.joinToString(", "){it.name}
+
+                        binding.tvProductionCompaniesBottomSheet.text = "Production Companies : $productionCompanies"
+                        binding.tvProductionCountriesBottomSheet.text = "Production Countries : $productionCountries"
+
+                        binding.tvTrailer.setOnClickListener {
+                            getMovieYoutubeTrailer()
+                        }
 
 
                         binding.cvHomePageBottomSheet.setOnClickListener{
@@ -165,23 +174,21 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                 when(movieTrailerResponse){
                     is Resource.Success->{
 
+                        val results = movieTrailerResponse.data?.results
 
-                        Log.e("youtubekey",movieTrailerResponse.data!!.results.first().key)
+                        if (!results.isNullOrEmpty()) {
 
+                            val uri = Uri.parse(results[0].key)
 
-                        binding.webViewYtBottomSheet.apply {
+                                val intent = Intent(Intent.ACTION_VIEW,uri)
+                                val intentChooser = Intent.createChooser(intent,"Choose An Action")
+                                startActivity(intentChooser)
 
-                            clearHistory()
-                            clearCache(true)
-                            settings.domStorageEnabled = true
-                            settings.javaScriptEnabled = true
-
-                            webViewClient = WebViewClient()
-                            settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                            isNestedScrollingEnabled = true
-                            loadUrl(CONSTANTS.YOUTUBE_TRAILER_BASE_URL + movieTrailerResponse.data.results[0].key)
-
+                        }else{
+                            Log.e("as","nul")
                         }
+
+
                     }
                     is Resource.Error->{
                         Log.e("asd","error")
@@ -192,32 +199,6 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-    }
-
-
-
-
-    private fun handleRv(){
-            movieCreditAdapter = MovieCreditAdapter(object : MovieCreditAdapter.OnItemClickListener {
-                override fun onPersonClick(currentPerson: Cast) {
-                    val bundle = Bundle().apply {
-                        putInt("personData",currentPerson.id)
-                    }
-
-                    val personDetailFragment = PopularPeopleDetailFragment()
-                    personDetailFragment.arguments = bundle
-
-
-                    personDetailFragment.show(requireActivity().supportFragmentManager,PopularPeopleDetailFragment().tag)
-
-                }
-            })
-        binding.apply {
-            rvCastBottomSheet.adapter = movieCreditAdapter
-            rvCastBottomSheet.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
-            rvCastBottomSheet.setHasFixedSize(true)
-        }
-
     }
 
     private fun getMovieCredit(){
@@ -254,6 +235,25 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    private fun handleRv(){
+        movieCreditAdapter = MovieCreditAdapter(object : MovieCreditAdapter.OnItemClickListener {
+            override fun onPersonClick(currentPerson: Cast) {
+                val bundle = Bundle().apply {
+                    putInt("personData",currentPerson.id)
+                }
+
+                findNavController().navigate(R.id.action_similarMovieDetailFragment_to_popularPeopleDetailFragment,bundle)
+
+            }
+        })
+        binding.apply {
+            rvCastBottomSheet.adapter = movieCreditAdapter
+            rvCastBottomSheet.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
+            rvCastBottomSheet.setHasFixedSize(true)
+        }
+
     }
 
 }

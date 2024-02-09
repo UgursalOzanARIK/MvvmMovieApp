@@ -1,6 +1,8 @@
 package com.ozanarik.mvvmmovieapp.business.remote
 
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.PopularPeopleModel
+import com.ozanarik.mvvmmovieapp.business.models.people_model.people_related_movies.PersonRelatedMoviesResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.persondetail.PersonDetailResponse
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.API_KEY
 import retrofit2.Response
@@ -28,6 +30,12 @@ interface PeopleApi {
         @Path("person_id")person_id:Int,
         @Query("api_key")api_key:String= API_KEY
     ):Response<PersonDetailResponse>
+
+    @GET("/3/person/{person_id}/combined_credits")
+    suspend fun getPersonRelatedMovies(
+        @Path("person_id")person_id:Int,
+        @Query("api_key")api_key: String= API_KEY
+    ):Response<PersonRelatedMoviesResponse>
 
 
 }
