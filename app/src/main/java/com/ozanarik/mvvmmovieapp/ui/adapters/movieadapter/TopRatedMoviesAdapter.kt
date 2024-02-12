@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS
 import com.squareup.picasso.Picasso

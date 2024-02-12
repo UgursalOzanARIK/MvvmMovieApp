@@ -28,6 +28,8 @@ class MovieRepository @Inject constructor(private val movieApi: MovieApi) {
 
     suspend fun getSimilarMovies(movieId: Int)=movieApi.getSimilarMovies(movieId)
 
+    suspend fun searchMovieOrShow(query:String)=movieApi.searchMovie(query)
+
 
 
 }

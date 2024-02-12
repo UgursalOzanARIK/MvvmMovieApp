@@ -12,13 +12,6 @@ class Extensions {
         fun Double.doubleToFloat():Float{
             return this.toFloat()
         }
-        fun getHoursAndMinutes(totalMin:Int):Pair<Int,Int>{
-
-            val hours = totalMin/60
-            val minutes = totalMin%60
-
-            return Pair(hours,minutes)
-        }
 
         fun View.showSnackbar(msg:String,length:Int = Snackbar.LENGTH_LONG){
             Snackbar.make(this,msg,length).show()

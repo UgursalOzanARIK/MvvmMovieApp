@@ -5,14 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/episode_detail_custom_bg"
-    tools:context=".ui.fragments.LastEpisodeFragment"
+    tools:context=".ui.fragments.ShowInfo"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/tvLastEpisodeDateDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_slab_bold"
         android:text="TextView"
         android:textAlignment="center"
@@ -21,13 +23,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEpisodeTagline" />
+        app:layout_constraintTop_toBottomOf="@+id/tvShowProductionCompanies" />
 
     <TextView
         android:id="@+id/tvEpisodeTypeDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_slab_bold"
         android:text="TextView"
         android:textAlignment="center"
@@ -39,10 +43,12 @@
         app:layout_constraintTop_toBottomOf="@+id/tvLastEpisodeDateDetail" />
 
     <TextView
-        android:id="@+id/tvEpisodeRunTimeDetail"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvVoteAverageDetail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_slab_bold"
         android:text="TextView"
         android:textAlignment="center"
@@ -54,43 +60,13 @@
         app:layout_constraintTop_toBottomOf="@+id/tvEpisodeTypeDetail" />
 
     <TextView
-        android:id="@+id/tvSeasonNumberDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto_slab_bold"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEpisodeRunTimeDetail" />
-
-    <TextView
-        android:id="@+id/tvVoteAverageDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto_slab_bold"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSeasonNumberDetail" />
-
-    <TextView
         android:id="@+id/tvOverViewDetail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="16dp"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -115,5 +91,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvShowProductionCompanies"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/roboto_slab_bold"
+        android:text="Production Companies :"
+        android:textAlignment="viewStart"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEpisodeTagline" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

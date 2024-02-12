@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.ozanarik.mvvmmovieapp.business.repository.ShowsRepository
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowsResponse
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.show_youtube_trailer_response.ShowsYoutubeTrailerModel
+import com.ozanarik.mvvmmovieapp.business.models.shows_model.shows_credits_cast_model.ShowCreditResponse
+import com.ozanarik.mvvmmovieapp.utils.MovieLanguage
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,105 @@ class ShowsViewModel @Inject constructor(private val showsRepository: ShowsRepos
 
     private val _detailedShowData:MutableStateFlow<Resource<ShowDetailModel>> = MutableStateFlow(Resource.Loading())
     val detailedShowData:StateFlow<Resource<ShowDetailModel>> = _detailedShowData
+
+    private val _showCreditData:MutableStateFlow<Resource<ShowCreditResponse>> = MutableStateFlow(Resource.Loading())
+    val showCreditData:StateFlow<Resource<ShowCreditResponse>> = _showCreditData
+
+    private val _searchedShowData:MutableStateFlow<Resource<ShowsResponse>> = MutableStateFlow(Resource.Loading())
+    val searchedShowData:StateFlow<Resource<ShowsResponse>> = _searchedShowData
+
+    private val _showYoutubeTrailerData:MutableStateFlow<Resource<ShowsYoutubeTrailerModel>> = MutableStateFlow(Resource.Loading())
+    val showYoutubeTrailerData:StateFlow<Resource<ShowsYoutubeTrailerModel>> = _showYoutubeTrailerData
+
+    private val _similarShowData:MutableStateFlow<Resource<ShowsResponse>> = MutableStateFlow(Resource.Loading())
+    val similarShowData:StateFlow<Resource<ShowsResponse>> = _similarShowData
+
+
+    fun getSimilarShows(series_id: Int)=viewModelScope.launch {
+
+        try {
+
+            val similarShowResponse = withContext(Dispatchers.IO){
+                showsRepository.getSimilarShows(series_id)
+            }
+            if (similarShowResponse.isSuccessful){
+                _similarShowData.value = Resource.Success(similarShowResponse.body()!!)
+            }
+
+
+        }catch (e:Exception){
+            _similarShowData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _similarShowData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+    }
+
+
+    fun getShowYoutubeTrailer(series_id: Int)=viewModelScope.launch {
+
+        _showYoutubeTrailerData.value = Resource.Loading()
+        try {
+            val youtubeTrailerResponse = withContext(Dispatchers.IO){
+                showsRepository.getShowYoutubeTrailer(series_id)
+            }
+            if (youtubeTrailerResponse.isSuccessful){
+                _showYoutubeTrailerData.value = Resource.Success(youtubeTrailerResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _showYoutubeTrailerData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _showYoutubeTrailerData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+    }
+
+
+
+    fun searchShow(query:String)=viewModelScope.launch {
+
+        _searchedShowData.value = Resource.Loading()
+        try {
+            val searchedShowResponse = withContext(Dispatchers.IO){
+                showsRepository.searchShow(query)
+            }
+            if (searchedShowResponse.isSuccessful){
+                _searchedShowData.value = Resource.Success(searchedShowResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _searchedShowData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _searchedShowData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+    }
+
+    fun getShowCredit(series_id:Int)=viewModelScope.launch {
+
+        _showCreditData.value = Resource.Loading()
+
+        try {
+            val showCreditResponse = withContext(Dispatchers.IO){
+                showsRepository.getShowCredits(series_id)
+            }
+            if (showCreditResponse.isSuccessful){
+                _showCreditData.value = Resource.Success(showCreditResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _showCreditData.value = Resource.Error(e.message?:e.localizedMessage!!)
+
+        }catch (e:IOException){
+            _showCreditData.value = Resource.Error(e.message?:e.localizedMessage!!)
+        }
+
+
+    }
 
 
     fun getOnTheAirShows()=viewModelScope.launch {
@@ -144,6 +246,24 @@ class ShowsViewModel @Inject constructor(private val showsRepository: ShowsRepos
 
         }catch (e:IOException){
             _detailedShowData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+    }
+
+    fun getMovieLanguage(languageValue:String):String {
+
+        return when (languageValue) {
+
+            MovieLanguage.English.language -> "English"
+            MovieLanguage.Russian.language -> "Russian"
+            MovieLanguage.Korean.language -> "Korean"
+            MovieLanguage.Japanese.language -> "Japanese"
+            MovieLanguage.Italian.language -> "Italian"
+            MovieLanguage.Mexican.language -> "Mexican"
+            MovieLanguage.French.language -> "French"
+            MovieLanguage.German.language -> "German"
+            MovieLanguage.Australia.language -> "Australia"
+
+            else -> "N/A"
         }
     }
 }

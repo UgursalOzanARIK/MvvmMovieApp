@@ -69,8 +69,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 
     //NAVIGATION
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.6")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
 
     //PICASSO
     implementation ("com.squareup.picasso:picasso:2.8")
@@ -79,5 +79,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.2.0")
 
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
 
 }

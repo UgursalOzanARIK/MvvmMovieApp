@@ -1,34 +1,24 @@
 package com.ozanarik.mvvmmovieapp.ui.fragments
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesByGenreBinding
-import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.NowPlayingMovieAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.UpcomingMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
+import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.MovieGenreType
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -77,10 +67,10 @@ class MoviesByGenreFragment : Fragment() {
                         upcomingMoviesAdapter.asyncDifferList.submitList(allMoviesList)
                     }
                     is Resource.Error->{
-                        Log.e("asd","error")
+                        showSnackbar(allMoviesResponse.message!!)
                     }
                     is Resource.Loading->{
-                        Log.e("asd","loading")
+                        showSnackbar("Fetching Data")
                     }
                 }
             }
@@ -99,12 +89,10 @@ class MoviesByGenreFragment : Fragment() {
         alertDialog.setTitle("Choose A Genre")
             .setItems(optionList.toTypedArray()){dialog,option->
 
-                selectedGenre = MovieGenreType.valueOf(optionList[option])
+               selectedGenre = MovieGenreType.valueOf(optionList[option])
+
                 val sortedList = movieList.filter { it.genreIds.contains(selectedGenre.genreId) }
                 binding.tvGenreDetail.text = selectedGenre.name
-                Log.e("asd",selectedGenre.genreId.toString())
-
-                Log.e("asd",selectedGenre.name)
 
                 updateAdapter(sortedList)
 

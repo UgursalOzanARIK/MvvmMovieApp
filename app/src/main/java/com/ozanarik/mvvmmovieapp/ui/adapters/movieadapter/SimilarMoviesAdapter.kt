@@ -6,14 +6,14 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
-import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
+import com.ozanarik.mvvmmovieapp.databinding.PopularPeopleRelatedMoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
 
 class SimilarMoviesAdapter (private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<SimilarMoviesAdapter.SimilarMovieHolder>() {
 
-    inner class SimilarMovieHolder(val binding: MoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
+    inner class SimilarMovieHolder(val binding: PopularPeopleRelatedMoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
 
     private val diffUtil = object : DiffUtil.ItemCallback<Result>(){
         override fun areItemsTheSame(oldItem: Result, newItem: Result): Boolean {
@@ -29,7 +29,7 @@ class SimilarMoviesAdapter (private val onItemClickListener: OnItemClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarMovieHolder {
         val layoutFrom = LayoutInflater.from(parent.context)
-        val binding:MoviesItemListBinding = MoviesItemListBinding.inflate(layoutFrom,parent,false)
+        val binding:PopularPeopleRelatedMoviesItemListBinding = PopularPeopleRelatedMoviesItemListBinding.inflate(layoutFrom,parent,false)
         return SimilarMovieHolder(binding)
     }
 
@@ -37,8 +37,7 @@ class SimilarMoviesAdapter (private val onItemClickListener: OnItemClickListener
         val currentSimilarMovie = asyncDifferList.currentList[position]
 
         holder.binding.apply {
-            tvMovieName.text = currentSimilarMovie.originalTitle
-            Picasso.get().load(IMAGE_BASE_URL + currentSimilarMovie.posterPath).placeholder(R.drawable.placeholder).error(R.drawable.baseline_error_24).into(imageViewPosterPath)
+            Picasso.get().load(IMAGE_BASE_URL + currentSimilarMovie.posterPath).placeholder(R.drawable.placeholder).error(R.drawable.baseline_error_24).into(imageViewPersonRelatedMoviePath)
         }
 
         holder.itemView.setOnClickListener {
@@ -53,6 +52,6 @@ class SimilarMoviesAdapter (private val onItemClickListener: OnItemClickListener
     }
 
     interface OnItemClickListener{
-        fun onSimilarMovieClick(currentSimilarMovie:Result?)
+        fun onSimilarMovieClick(currentSimilarMovie: Result?)
     }
 }

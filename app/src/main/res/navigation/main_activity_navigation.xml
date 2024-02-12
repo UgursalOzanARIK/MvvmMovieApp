@@ -54,13 +54,19 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_showDetailFragment_to_lastEpisodeFragment"
-            app:destination="@id/lastEpisodeFragment" />
+            app:destination="@id/showInfo" />
+        <action
+            android:id="@+id/action_showDetailFragment_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
+        <action
+            android:id="@+id/action_showDetailFragment_to_similarShowDetailFragment"
+            app:destination="@id/similarShowDetailFragment" />
     </fragment>
     <dialog
-        android:id="@+id/lastEpisodeFragment"
-        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.LastEpisodeFragment"
+        android:id="@+id/showInfo"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.ShowInfo"
         android:label="fragment_last_episode"
-        tools:layout="@layout/fragment_last_episode" >
+        tools:layout="@layout/fragment_show_info" >
         <argument
             android:name="showEpisodeDetailData"
             app:argType="com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel" />
@@ -133,5 +139,17 @@
         <action
             android:id="@+id/action_castRelatedMovies_to_similarMovieDetailFragment"
             app:destination="@id/similarMovieDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/similarShowDetailFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.SimilarShowDetailFragment"
+        android:label="fragment_similar_show_detail"
+        tools:layout="@layout/fragment_similar_show_detail" >
+        <argument
+            android:name="showData"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_similarShowDetailFragment_to_showDetailFragment"
+            app:destination="@id/showDetailFragment" />
     </fragment>
 </navigation>

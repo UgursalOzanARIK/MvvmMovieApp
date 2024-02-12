@@ -4,12 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebSettings
-import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,7 +14,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response.Cast
 import com.ozanarik.mvvmmovieapp.databinding.FragmentSimilarMovieDetailBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
@@ -86,15 +83,8 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                         binding.tvDescriptionBottomSheet.text = detailedMovieResponse.data.overview
                         Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + detailedMovieResponse.data.posterPath).placeholder(R.drawable.placeholder).into(binding.imageViewPosterPathBottomSheet)
 
-                        binding.tvOriginalLanguageBottomSheet.text = when(detailedMovieResponse.data.originalLanguage){
-                            "en"->"English"
-                            "de"->"German"
-                            "ja"->"Japanese"
-                            "es"->"Spanish"
-                            else->"en"
-                        }
-                        val (hours,minutes) = Extensions.getHoursAndMinutes(detailedMovieResponse.data.runtime)
-                        binding.tvRunTimeBottomSheet.text = "$hours h / $minutes min"
+                        binding.tvOriginalLanguageBottomSheet.text = movieViewModel.getMovieLanguage(detailedMovieResponse.data.originalLanguage)
+                        binding.tvRunTimeBottomSheet.text = "${detailedMovieResponse.data.runtime} min"
                         binding.tvTaglineBottomSheet.text = " \"${detailedMovieResponse.data.tagline}\" "
 
                         val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}

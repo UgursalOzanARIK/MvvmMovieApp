@@ -3,7 +3,6 @@ package com.ozanarik.mvvmmovieapp.ui.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentPopularPeopleDetailBinding
-import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.TopRatedMoviesAdapter
-import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.peopleadapter.PopularPeopleRelatedMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.PeopleViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
@@ -27,7 +21,6 @@ import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -50,8 +43,6 @@ class PopularPeopleDetailFragment : Fragment() {
         handlePersonRelatedMoviesRv()
 
         getPersonRelatedMovies()
-
-
 
         return binding.root
     }
@@ -105,16 +96,14 @@ class PopularPeopleDetailFragment : Fragment() {
 
                         binding.apply {
 
-                            Picasso.get().load(IMAGE_BASE_URL + personDetail!!.profilePath).
-                            placeholder(R.drawable.placeholder).
-                                    error(R.drawable.baseline_error_24).into(imageViewPersonProfile)
 
-                            tvImdbId.text = "Imdb Id : ${personDetail.imdbİd}"
+
+                            tvImdbId.text = "Imdb Id : ${personDetail!!.imdbİd}"
                             tvAlsoKnownAs.text = personDetail.alsoKnownAs.toString()
                             tvPersonBiography.text = personDetail.biography
                             tvPlaceAndDateOfBirth.text = "Place of Birth : ${personDetail.placeOfBirth}\n" +
                                     "Date of Birth : ${personDetail.birthday}"
-                            Picasso.get().load(IMAGE_BASE_URL + personDetail!!.profilePath).
+                            Picasso.get().load(IMAGE_BASE_URL + personDetail.profilePath).
                             placeholder(R.drawable.placeholder).
                             error(R.drawable.baseline_error_24).into(imageViewPersonKnownFor)
 
@@ -131,8 +120,6 @@ class PopularPeopleDetailFragment : Fragment() {
 
 
                                 startActivity(homePage)
-
-
 
                             }
 

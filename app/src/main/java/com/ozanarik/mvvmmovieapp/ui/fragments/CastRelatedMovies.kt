@@ -8,27 +8,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebSettings
-import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentCastRelatedMoviesBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.SimilarMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
-import com.ozanarik.mvvmmovieapp.utils.CONSTANTS
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
-import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.YOUTUBE_TRAILER_BASE_URL
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -86,17 +81,17 @@ class CastRelatedMovies : Fragment(){
                         val productionCompanies = detailedMovie.productionCompanies.let { company-> company.joinToString (", "){it.name} }
                         val productionCountries = detailedMovie.productionCountries.let { country-> country.joinToString (", "){it.name} }
 
-                        tvProductionCompaniesCastRelated.text = productionCompanies
-                        tvProductionCountriesCastRelated.text = productionCountries
+                        tvProductionCompaniesCastRelated.text = "Production Companies : $productionCompanies"
+                        tvProductionCountriesCastRelated.text = "Production Countries : $productionCountries"
                         detailedMovie.tagline.let { tvCastRelatedTagline.text = it }
 
-                        val genreList = detailedMovie.genres.let {genre->genre.take(4).joinToString (", "){it.name}  }
+                        val genreList = detailedMovie.genres.let {genre->genre.joinToString (", "){it.name}  }
 
                         tvGenreCastRelated.text = genreList
 
                         tvRunTimeCastRelated.text = "${detailedMovie?.runtime} min"
 
-                        tvOriginalLanguageCastRelated.text = detailedMovie.originalLanguage
+                        tvOriginalLanguageCastRelated.text = movieViewModel.getMovieLanguage(detailedMovie.originalLanguage)
 
                         tvCastRelatedMovieName.text = detailedMovie.originalTitle
                         tvOverViewCastRelated.text = detailedMovie.overview

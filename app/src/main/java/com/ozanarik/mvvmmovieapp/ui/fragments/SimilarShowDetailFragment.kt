@@ -1,8 +1,9 @@
 package com.ozanarik.mvvmmovieapp.ui.fragments
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,71 +13,53 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.business.models.shows_model.Result
-import com.ozanarik.mvvmmovieapp.databinding.FragmentShowDetailBinding
+import com.ozanarik.mvvmmovieapp.R
+import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.Result
+import com.ozanarik.mvvmmovieapp.databinding.FragmentSimilarShowDetailBinding
+import com.ozanarik.mvvmmovieapp.ui.adapters.peopleadapter.PopularPeopleAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.shows_credit_adapter.ShowsCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.similar_shows.SimilarShowsAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.ShowsViewModel
-import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
+import com.ozanarik.mvvmmovieapp.utils.CONSTANTS
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 @AndroidEntryPoint
-class ShowDetailFragment : Fragment() {
-    private lateinit var binding: FragmentShowDetailBinding
+class SimilarShowDetailFragment : Fragment() {
+    private lateinit var binding:FragmentSimilarShowDetailBinding
     private lateinit var showsViewModel: ShowsViewModel
-
     private lateinit var showsCreditAdapter: ShowsCreditAdapter
-    private lateinit var similarShowsAdapter: SimilarShowsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
 
+        binding = FragmentSimilarShowDetailBinding.inflate(inflater,container,false)
+
+
         showsViewModel = ViewModelProvider(this)[ShowsViewModel::class.java]
+        handleRv()
 
-        binding = FragmentShowDetailBinding.inflate(inflater,container,false)
-
+        handleShowCredit()
+        getShowYoutubeTrailer()
+        handleShowDetail()
 
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        handleShowDetail()
-        handleRv()
-        handleShowCredit()
-        getShowYoutubeTrailer()
-        getSimilarShows()
-
-    }
 
 
-    private fun getSimilarShows(){
-        val showDetailArgs:ShowDetailFragmentArgs by navArgs()
 
-        val detailedShowData = showDetailArgs.showData
-
-        showsViewModel.getSimilarShows(detailedShowData)
-        viewLifecycleOwner.lifecycleScope.launch {
-            showsViewModel.similarShowData.collect{similarShowsResponse->
-                when(similarShowsResponse){
-                    is Resource.Success->{similarShowsAdapter.asyncDifferList.submitList(similarShowsResponse.data!!.results)}
-                    is Resource.Loading->{"Fetching Data"}
-                    is Resource.Error->{showSnackbar(similarShowsResponse.message!!)}
-                }
-            }
-        }
-    }
 
     private fun handleShowCredit(){
         val showDetailArgs:ShowDetailFragmentArgs by navArgs()
@@ -110,24 +93,18 @@ class ShowDetailFragment : Fragment() {
                 when(showYoutubeTrailerResponse){
                     is Resource.Success->{
 
-                        viewLifecycleOwner.lifecycle.addObserver(binding.showTrailerYoutubePlayer)
+                        binding.tvSimilarShowYtTrailer.setOnClickListener {
 
-                        binding.apply {
-                            showTrailerYoutubePlayer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener(){
-                                override fun onReady(youTubePlayer: YouTubePlayer) {
+                            val result = showYoutubeTrailerResponse.data?.results
 
-                                    val showTrailer = showYoutubeTrailerResponse.data?.results
-                                    if (showTrailer.isNullOrEmpty()){
-                                        showSnackbar("No trailer found for the show...")
-                                    }else{
-                                        val videoId = showTrailer?.first()?.key
-                                        if (videoId!=null){
-                                            youTubePlayer.loadVideo(videoId,0.5f)
-                                        }
-                                    }
+                            if (!result.isNullOrEmpty()){
+                                val movieUri = Uri.parse(result[0].key)
+                                val intent = Intent(Intent.ACTION_VIEW,movieUri)
+                                val intentChooser = Intent.createChooser(intent, "Choose An Action")
+                                startActivity(intentChooser)
+                            }
 
-                                }
-                            })
+
                         }
 
                     }
@@ -164,45 +141,34 @@ class ShowDetailFragment : Fragment() {
                         val decimalFormat = DecimalFormat("#.##")
 
                         binding.apply {
-                            tvShowImdb.text = "IMDB / ${decimalFormat.format(detailedShowData.data!!.voteAverage)}"
-                            tvShowTitle.text = showDetail!!.originalName
-                            Picasso.get().load(IMAGE_BASE_URL + showDetail.posterPath).into(binding.imageViewPosterPath)
-                            tvOverView.text = showDetail.overview
+                            tvSimilarShowImdbRate.text = "IMDB / ${decimalFormat.format(detailedShowData.data!!.voteAverage)}"
+                            tvSimilarShowOriginalName.text = showDetail!!.originalName
+                            Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + showDetail.posterPath).into(binding.imageViewSimilarShowDetail)
+                            tvSimilarShowDescription.text = showDetail.overview
 
                             showDetail?.tagline?.let {
 
                                 if (it.isEmpty()){
-                                    tvShowTagline.text = ""
+                                    tvSimilarShowTagline.text = ""
                                 }else{
-                                    tvShowTagline.text = it
+                                    tvSimilarShowTagline.text = it
                                 }
                             }
 
                             val showGenres = showDetail.genres.joinToString(", "){it.name}
-                            tvShowGenre.text = showGenres
+                            tvSimilarShowGenre.text = showGenres
 
                             val episodeRunTimeList = showDetail.episodeRunTime
 
 
                             val episodeRunTimeString = episodeRunTimeList.joinToString(", "){it.toString()}
 
-                            tvShowRunTime.text = "$episodeRunTimeString min"
-                            tvShowLanguage.text = showsViewModel.getMovieLanguage(showDetail.originalLanguage)
+                            tvSimilarShowRunTime.text = "$episodeRunTimeString min"
+                            tvSimilarShowOriginalLanguage.text = showsViewModel.getMovieLanguage(showDetail.originalLanguage)
 
                         }
 
-                        binding.fabInfo.setOnClickListener {
 
-                            val bundle = Bundle().apply {
-                                putSerializable("showEpisodeDetailData",showDetail)
-                            }
-                            val showInfoFragment = ShowInfo()
-                            showInfoFragment.arguments = bundle
-
-
-                            showInfoFragment.show(requireActivity().supportFragmentManager,showInfoFragment.tag)
-
-                        }
 
                     }
                     is Resource.Error->{
@@ -217,7 +183,10 @@ class ShowDetailFragment : Fragment() {
     }
 
 
-    private fun handleRv(){
+
+
+
+    private fun  handleRv(){
 
         showsCreditAdapter = ShowsCreditAdapter(object : ShowsCreditAdapter.OnItemClickListener {
             override fun onCastClicked(currentCast: com.ozanarik.mvvmmovieapp.business.models.shows_model.shows_credits_cast_model.Cast) {
@@ -229,24 +198,10 @@ class ShowDetailFragment : Fragment() {
             }
         })
 
-        similarShowsAdapter = SimilarShowsAdapter(object : SimilarShowsAdapter.OnItemClickListener {
-            override fun onItemClick(similarShow: Result) {
-
-                val similarShowToPass = ShowDetailFragmentDirections.actionShowDetailFragmentToSimilarShowDetailFragment(similarShow.id)
-                findNavController().navigate(similarShowToPass)
-
-            }
-        })
-
-
         binding.apply {
-            rvShowCast.adapter = showsCreditAdapter
-            rvShowCast.setHasFixedSize(true)
-            rvShowCast.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
-
-            rvSimilarShows.adapter = similarShowsAdapter
-            rvSimilarShows.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL)
-            rvSimilarShows.setHasFixedSize(true)
+            rvSimilarShowCast.adapter = showsCreditAdapter
+            rvSimilarShowCast.setHasFixedSize(true)
+            rvSimilarShowCast.layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL)
         }
 
     }

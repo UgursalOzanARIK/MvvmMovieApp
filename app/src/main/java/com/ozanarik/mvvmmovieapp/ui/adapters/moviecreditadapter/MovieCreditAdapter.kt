@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response.Cast
 import com.ozanarik.mvvmmovieapp.databinding.MovieCreditItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
@@ -17,7 +17,8 @@ class MovieCreditAdapter (private val onItemClickListener: OnItemClickListener) 
 
     private val diffUtil = object : DiffUtil.ItemCallback<Cast>(){
         override fun areItemsTheSame(
-            oldItem: Cast, newItem: Cast): Boolean {
+            oldItem: Cast, newItem: Cast
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
@@ -56,7 +57,7 @@ class MovieCreditAdapter (private val onItemClickListener: OnItemClickListener) 
     }
 
     interface OnItemClickListener{
-        fun onPersonClick(currentPerson:Cast)
+        fun onPersonClick(currentPerson: Cast)
     }
 
 }

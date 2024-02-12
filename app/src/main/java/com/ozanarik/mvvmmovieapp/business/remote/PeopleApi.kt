@@ -1,6 +1,5 @@
 package com.ozanarik.mvvmmovieapp.business.remote
 
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.PopularPeopleModel
 import com.ozanarik.mvvmmovieapp.business.models.people_model.people_related_movies.PersonRelatedMoviesResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.persondetail.PersonDetailResponse
@@ -18,7 +17,7 @@ interface PeopleApi {
     ):Response<PopularPeopleModel>
 
 
-    @GET("/3/search/person")
+    @GET("/3/search/multi")
     suspend fun searchPopularPerson(
         @Query("query")query:String,
         @Query("api_key")api_key: String= API_KEY

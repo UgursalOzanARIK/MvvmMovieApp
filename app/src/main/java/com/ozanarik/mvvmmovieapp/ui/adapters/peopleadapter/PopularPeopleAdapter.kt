@@ -40,9 +40,10 @@ class PopularPeopleAdapter (private val personClickListener: OnItemClickListener
 
             Picasso.get().load(IMAGE_BASE_URL + currentPerson.profilePath).placeholder(R.drawable.placeholder).error(R.drawable.baseline_error_24).into(imageViewPersonProfilePath)
             tvPersonName.text = currentPerson.name
+            tvPersonPopularity.text = "Popularity : ${currentPerson.popularity}"
         }
 
-        holder.binding.imageViewPersonInfo.setOnClickListener {
+        holder.itemView.setOnClickListener {
             personClickListener.onPersonClick(currentPerson)
         }
 

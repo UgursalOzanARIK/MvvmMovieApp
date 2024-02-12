@@ -47,9 +47,9 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
         handleRv()
         getPopularPeople()
 
-        handleToolbar()
 
 
+        (activity as AppCompatActivity).setSupportActionBar(binding.popularPeopleToolbar)
 
 
         requireActivity().addMenuProvider(object : MenuProvider {
@@ -58,7 +58,6 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
                 val searchItem = menu.findItem(R.id.action_Search_Person)
                 val searchView = searchItem.actionView as SearchView
                 searchView.setOnQueryTextListener(this@PopularPeopleFragment)
-
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -69,11 +68,6 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
 
 
         return binding.root
-    }
-
-
-    private fun handleToolbar(){
-        (activity as AppCompatActivity).setSupportActionBar(binding.popularPeopleToolbar)
     }
 
 
@@ -102,7 +96,6 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
         popularPeopleAdapter = PopularPeopleAdapter(object : PopularPeopleAdapter.OnItemClickListener {
             override fun onPersonClick(currentPerson: Result) {
 
-                Log.e("asd",currentPerson.id.toString())
 
                 val bundle = Bundle().apply {
                     putInt("personData",currentPerson.id)
@@ -115,7 +108,7 @@ class PopularPeopleFragment : Fragment(),SearchView.OnQueryTextListener {
         })
 
         binding.rvPopularPeople.adapter = popularPeopleAdapter
-        binding.rvPopularPeople.layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
+        binding.rvPopularPeople.layoutManager = StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL)
         binding.rvPopularPeople.setHasFixedSize(false)
 
 

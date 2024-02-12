@@ -5,15 +5,23 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
+import com.ozanarik.mvvmmovieapp.R
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentMoviesBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.NowPlayingMovieAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.PopularMoviesAdapter
@@ -27,9 +35,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MoviesFragment : Fragment() {
+class MoviesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var binding: FragmentMoviesBinding
-    lateinit var movieViewModel: MovieViewModel
+    private lateinit var movieViewModel: MovieViewModel
     private lateinit var nowPlayingMoviesAdapter: NowPlayingMovieAdapter
     private lateinit var popularMoviesAdapter: PopularMoviesAdapter
     private lateinit var topRatedMoviesAdapter: TopRatedMoviesAdapter
@@ -46,15 +54,49 @@ class MoviesFragment : Fragment() {
         movieViewModel = ViewModelProvider(this)[MovieViewModel::class.java]
 
 
-
         handleMovieRv()
-        handleNowPlayingMovies()
-        handlePopularMovies()
         handleTopRatedMovies()
         handleUpcomingMovies()
+        handlePopularMovies()
+        handleNowPlayingMovies()
+
+        (activity as AppCompatActivity).setSupportActionBar(binding.moviesToolbar)
+
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.movie_search_menu,menu)
+                val searchItem = menu.findItem(R.id.action_SearchMovie)
+                val searchView = searchItem.actionView as SearchView
+                searchView.setOnQueryTextListener(this@MoviesFragment)
+
+
+            }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        },viewLifecycleOwner,Lifecycle.State.RESUMED)
 
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+
+    private fun handleMovieSearch(query:String?){
+
+        query?.let { movieViewModel.searchMovie(it) }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            movieViewModel.searchedMovieData.collect{searchedMovieResponse->
+                when(searchedMovieResponse){
+                    is Resource.Success->{nowPlayingMoviesAdapter.asyncDifferList.submitList(searchedMovieResponse.data!!.results)}
+                    is Resource.Error->{showSnackbar(searchedMovieResponse.message!!)}
+                    is Resource.Loading->{showSnackbar("Fetching Data")}
+                }
+            }
+        }
+
     }
 
 
@@ -228,7 +270,7 @@ class MoviesFragment : Fragment() {
         updateAdapter:(List<Result>)->Unit
 
     ){
-        val optionList = arrayOf(MovieType.IMDB_RATE.movieType ,MovieType.RELEASE_DATE.movieType,MovieType.ADULT_CONTENT.movieType,MovieType.DEFAULT.movieType)
+        val optionList = arrayOf(MovieType.IMDB_RATE.movieType ,MovieType.RELEASE_DATE.movieType,MovieType.DEFAULT.movieType)
         filterImage.setOnClickListener {
             val alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle(title)
@@ -237,7 +279,6 @@ class MoviesFragment : Fragment() {
                 val sortedList = when(option){
                     0->movieList.sortedBy { movie->movie.voteAverage }
                     1->movieList.sortedBy { movie->movie.releaseDate }
-                    2->movieList.sortedBy { movie->movie.adult }
                     else->movieList
                 }
                 updateAdapter(sortedList)
@@ -248,5 +289,15 @@ class MoviesFragment : Fragment() {
     private fun handleNavigation(movieData:Int){
         val movieToPass = MoviesFragmentDirections.actionMoviesFragmentToDetailFragment(movieData)
         findNavController().navigate(movieToPass)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let { handleMovieSearch(it) }
+        return true
+
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        return false
     }
 }

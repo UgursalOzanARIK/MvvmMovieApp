@@ -16,5 +16,13 @@ class ShowsRepository @Inject constructor (private val showApi: ShowApi) {
 
     suspend fun getShowDetail(show_id:Int)=showApi.getShowDetail(show_id)
 
+    suspend fun getShowCredits(series_id:Int)=showApi.getShowCredits(series_id)
+
+    suspend fun searchShow(query:String)=showApi.searchShow(query)
+
+    suspend fun getShowYoutubeTrailer(series_id:Int)=showApi.getShowTrailer(series_id)
+
+    suspend fun getSimilarShows(series_id: Int)=showApi.getSimilarShows(series_id)
+
 
 }

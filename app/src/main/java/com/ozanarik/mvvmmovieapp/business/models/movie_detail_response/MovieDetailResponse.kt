@@ -1,8 +1,9 @@
-package com.ozanarik.mvvmmovieapp.business.models.movie_model
+package com.ozanarik.mvvmmovieapp.business.models.movie_detail_response
 
 
 import com.google.gson.annotations.SerializedName
 import com.google.gson.annotations.Expose
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response.Genre
 
 data class MovieDetailResponse(
     @Expose

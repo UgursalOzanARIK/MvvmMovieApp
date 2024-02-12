@@ -8,12 +8,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieReviewModel
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.ResultXX
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_review_response.ResultXX
 import com.ozanarik.mvvmmovieapp.databinding.MovieReviewsListItemBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
 import com.squareup.picasso.Picasso
-import java.time.format.DateTimeFormatter
 
 class MovieReviewAdapter:RecyclerView.Adapter<MovieReviewAdapter.MovieReviewHolder>() {
 
@@ -26,7 +24,8 @@ class MovieReviewAdapter:RecyclerView.Adapter<MovieReviewAdapter.MovieReviewHold
         }
 
         override fun areContentsTheSame(
-            oldItem: ResultXX, newItem: ResultXX): Boolean {
+            oldItem: ResultXX, newItem: ResultXX
+        ): Boolean {
             return oldItem == newItem
         }
     }

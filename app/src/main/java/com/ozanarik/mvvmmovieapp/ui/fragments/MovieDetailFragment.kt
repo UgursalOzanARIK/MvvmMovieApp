@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebSettings
-import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -19,17 +17,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ozanarik.mvvmmovieapp.R
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Cast
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.Result
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response.Cast
+import com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_response.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentDetailBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.SimilarMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
-import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.YOUTUBE_TRAILER_BASE_URL
-import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.getHoursAndMinutes
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -66,9 +64,6 @@ class MovieDetailFragment : Fragment() {
 
 
         getSimilarMovies()
-
-
-
 
 
         return binding.root
@@ -141,33 +136,32 @@ class MovieDetailFragment : Fragment() {
             movieViewModel.movieTrailerData.collect{movieTrailerResponse->
                 when(movieTrailerResponse){
                     is Resource.Success->{
+                        viewLifecycleOwner.lifecycle.addObserver(binding.youtubePlayer)
 
+                        binding.youtubePlayer.addYouTubePlayerListener(object:AbstractYouTubePlayerListener(){
+                            override fun onReady(youTubePlayer: YouTubePlayer) {
 
+                                val movieTrailer = movieTrailerResponse.data?.results
 
-                        binding?.webViewYt?.apply {
-                            clearHistory()
-                            clearCache(true)
-                            settings.domStorageEnabled = true
-                            settings.javaScriptEnabled = true
-                            webViewClient = WebViewClient()
-                            settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                            isNestedScrollingEnabled = true
+                                if (movieTrailer.isNullOrEmpty()){
+                                    showSnackbar("No trailer found for the movie...")
+                                }
+                                else{
+                                    val videoId = movieTrailer?.first()?.key
+                                    if (videoId != null) {
+                                        youTubePlayer.loadVideo(videoId,0.5f)
+                                    }
 
-                            val trailerKey = movieTrailerResponse?.data?.results?.firstOrNull()?.key
-                            if (!trailerKey.isNullOrEmpty()) {
-                                val url = "$YOUTUBE_TRAILER_BASE_URL$trailerKey"
-                                loadUrl(url)
-                            } else {
-                                // Handle the case where the list is empty or the trailer key is null or empty
-                                // For example, you can load a default URL or show an error message
+                                }
                             }
-                        }
+                        })
+
                     }
                     is Resource.Error->{
-                        Log.e("asd","error")
+                       showSnackbar("An error occured trying to load video")
                     }
                     is Resource.Loading->{
-                        Log.e("asd","loading")
+                        showSnackbar("Fetching Movie Trailer Data")
                     }
                 }
             }
@@ -199,15 +193,9 @@ class MovieDetailFragment : Fragment() {
                         binding.tvMovieDescription.text = detailedMovieResponse.data.overview
                         Picasso.get().load(IMAGE_BASE_URL + detailedMovieResponse.data.posterPath).placeholder(R.drawable.placeholder).into(binding.imageViewMovieDetail)
 
-                        binding.tvOriginalLanguage.text = when(detailedMovieResponse.data.originalLanguage){
-                            "en"->"English"
-                            "de"->"German"
-                            "ja"->"Japanese"
-                            "es"->"Spanish"
-                            else->"en"
-                        }
-                        val (hours,minutes) = getHoursAndMinutes(detailedMovieResponse.data.runtime)
-                        binding.tvRunTime.text = "$hours h / $minutes min"
+                        binding.tvOriginalLanguage.text = movieViewModel.getMovieLanguage(detailedMovieResponse.data.originalLanguage)
+
+                        binding.tvRunTime.text = "${detailedMovieResponse.data.runtime} min"
                         binding.tvTagline.text = " \"${detailedMovieResponse.data.tagline}\" "
 
                         val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}

@@ -1,4 +1,4 @@
-package com.ozanarik.mvvmmovieapp.business.models.movie_model
+package com.ozanarik.mvvmmovieapp.business.models.movie_model.movie_credits_response
 
 
 import com.google.gson.annotations.Expose

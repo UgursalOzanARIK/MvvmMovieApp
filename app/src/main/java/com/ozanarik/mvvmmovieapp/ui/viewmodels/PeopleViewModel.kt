@@ -2,7 +2,6 @@ package com.ozanarik.mvvmmovieapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ozanarik.mvvmmovieapp.business.models.movie_model.MovieResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.allpeoplelist.PopularPeopleModel
 import com.ozanarik.mvvmmovieapp.business.models.people_model.people_related_movies.PersonRelatedMoviesResponse
 import com.ozanarik.mvvmmovieapp.business.models.people_model.persondetail.PersonDetailResponse
@@ -23,8 +22,8 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
     private val _popularPeopleList:MutableStateFlow<Resource<PopularPeopleModel>> = MutableStateFlow(Resource.Loading())
     val popularPeopleList:StateFlow<Resource<PopularPeopleModel>> = _popularPeopleList
 
-    private val _searchedPerson:MutableStateFlow<Resource<PopularPeopleModel>> = MutableStateFlow(Resource.Loading())
-    val searchedPerson:StateFlow<Resource<PopularPeopleModel>> = _searchedPerson
+    private val _searchedValue:MutableStateFlow<Resource<PopularPeopleModel>> = MutableStateFlow(Resource.Loading())
+    val searchedPerson:StateFlow<Resource<PopularPeopleModel>> = _searchedValue
 
     private val _personDetail:MutableStateFlow<Resource<PersonDetailResponse>> = MutableStateFlow(Resource.Loading())
     val personDetail:StateFlow<Resource<PersonDetailResponse>> = _personDetail
@@ -77,7 +76,7 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
 
     fun searchPopularPerson(query:String)=viewModelScope.launch {
 
-        _searchedPerson.value = Resource.Loading()
+        _searchedValue.value = Resource.Loading()
 
         try {
 
@@ -85,15 +84,15 @@ class PeopleViewModel @Inject constructor(private val peopleRepository: PopularP
                 peopleRepository.searchPopularPerson(query)
             }
             if (searchedPersonResponse.isSuccessful){
-                _searchedPerson.value = Resource.Success(searchedPersonResponse.body()!!)
+                _searchedValue.value = Resource.Success(searchedPersonResponse.body()!!)
             }
 
 
         }catch (e:Exception){
-            _searchedPerson.value = Resource.Error(e.message?:e.localizedMessage!!)
+            _searchedValue.value = Resource.Error(e.message?:e.localizedMessage!!)
 
         }catch (e:IOException){
-            _searchedPerson.value = Resource.Error(e.message?:e.localizedMessage!!)
+            _searchedValue.value = Resource.Error(e.message?:e.localizedMessage!!)
         }
     }
 

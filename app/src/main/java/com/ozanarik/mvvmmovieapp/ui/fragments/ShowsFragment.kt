@@ -5,14 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.ozanarik.mvvmmovieapp.R
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.FragmentShowsBinding
 import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.AiringTodayShowsAdapter
@@ -28,7 +36,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ShowsFragment : Fragment() {
+class ShowsFragment : Fragment(),SearchView.OnQueryTextListener {
     private lateinit var binding:FragmentShowsBinding
     private lateinit var showsViewModel:ShowsViewModel
     private lateinit var topRatedShowsAdapter: TopRatedShowsAdapter
@@ -48,6 +56,21 @@ class ShowsFragment : Fragment() {
 
         binding = FragmentShowsBinding.inflate(inflater,container,false)
 
+        (activity as AppCompatActivity).setSupportActionBar(binding.showsToolbar)
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.show_search_menu,menu)
+                val searchItem = menu.findItem(R.id.action_SearchShow)
+                val searchView = searchItem.actionView as SearchView
+                searchView.setOnQueryTextListener(this@ShowsFragment)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        },viewLifecycleOwner,Lifecycle.State.RESUMED)
+
         handleRv()
 
         getPopularShows()
@@ -61,6 +84,25 @@ class ShowsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getTopRatedShows()
+    }
+
+
+    private fun searchShow(query:String?){
+        query?.let { showsViewModel.searchShow(it) }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            showsViewModel.searchedShowData.collect{searchedShowResponse->
+                when(searchedShowResponse){
+                    is Resource.Success->{popularShowsAdapter.asyncDifferList.submitList(searchedShowResponse.data!!.results)}
+                    is Resource.Error->{showSnackbar(searchedShowResponse.message!!)}
+                    is Resource.Loading->{showSnackbar("Fetching Data")}
+                }
+            }
+        }
+
+
+
+
     }
 
 
@@ -185,6 +227,7 @@ class ShowsFragment : Fragment() {
             topRatedShowsAdapter = TopRatedShowsAdapter(object : TopRatedShowsAdapter.OnItemClickListener {
                 override fun onItemClick(currentMovieOrShow: Result) {
                     handleNavigation(currentMovieOrShow.id)
+                    Log.e("asd",currentMovieOrShow.id.toString())
 
                 }
             })
@@ -234,7 +277,7 @@ class ShowsFragment : Fragment() {
         title:String,
         updateAdapter:(List<Result>)->Unit
     ){
-        val optionsList = arrayOf(MovieType.IMDB_RATE.movieType,MovieType.RELEASE_DATE.movieType,MovieType.ADULT_CONTENT.movieType,MovieType.DEFAULT.movieType)
+        val optionsList = arrayOf(MovieType.IMDB_RATE.movieType,MovieType.RELEASE_DATE.movieType,MovieType.DEFAULT.movieType)
         filterImage.setOnClickListener {
 
             val alertDialog = AlertDialog.Builder(requireContext())
@@ -260,6 +303,14 @@ class ShowsFragment : Fragment() {
 
     }
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let { searchShow(it) }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
 
 
 }
