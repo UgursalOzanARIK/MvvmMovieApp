@@ -12,6 +12,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -116,13 +117,15 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/transparent">
+                    android:background="@color/greyVariant">
 
                     <ImageView
                         android:id="@+id/imageViewHomePage"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_marginStart="16dp"
+                        android:background="@color/greyVariant"
+                        android:backgroundTint="@color/greyVariant"
                         android:src="@drawable/baseline_home_24"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -164,8 +167,7 @@
                 android:id="@+id/constraintLayoutOverview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
-                android:background="@drawable/cardview_imdb_show_detail_custom_bg"
+                android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView">
@@ -175,16 +177,17 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="64dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="64dp"
                     android:fontFamily="@font/roboto_slab_bold"
-                    android:textAlignment="textStart"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -192,24 +195,26 @@
                 android:id="@+id/constraintSimilarMovies"
                 android:layout_width="0dp"
                 android:layout_height="450dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/episode_detail_custom_bg"
+                android:layout_marginTop="32dp"
+                android:background="#0C0C0C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayoutOverview">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayoutOverview">
 
 
                 <TextView
                     android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp"
                     android:fontFamily="@font/roboto_slab_bold"
                     android:text="Similar Movies"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -222,7 +227,7 @@
                     android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView2" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

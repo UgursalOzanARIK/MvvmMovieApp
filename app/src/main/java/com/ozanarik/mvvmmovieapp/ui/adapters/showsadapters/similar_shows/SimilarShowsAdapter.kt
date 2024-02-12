@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.Result
 import com.ozanarik.mvvmmovieapp.databinding.MoviesItemListBinding
+import com.ozanarik.mvvmmovieapp.databinding.PopularPeopleRelatedMoviesItemListBinding
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS
 import com.squareup.picasso.Picasso
 
 class SimilarShowsAdapter (private val onItemClickListener: OnItemClickListener) :RecyclerView.Adapter<SimilarShowsAdapter.SimilarShowsHolder>() {
 
-    inner class SimilarShowsHolder(val binding:MoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
+    inner class SimilarShowsHolder(val binding: PopularPeopleRelatedMoviesItemListBinding):RecyclerView.ViewHolder(binding.root)
 
     private val diffUtil = object :DiffUtil.ItemCallback<Result>(){
         override fun areItemsTheSame(oldItem: Result, newItem: Result): Boolean {
@@ -29,7 +30,7 @@ class SimilarShowsAdapter (private val onItemClickListener: OnItemClickListener)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarShowsHolder {
         val layoutFrom = LayoutInflater.from(parent.context)
-        val binding:MoviesItemListBinding = MoviesItemListBinding.inflate(layoutFrom,parent,false)
+        val binding:PopularPeopleRelatedMoviesItemListBinding = PopularPeopleRelatedMoviesItemListBinding.inflate(layoutFrom,parent,false)
         return SimilarShowsHolder(binding)
     }
 
@@ -37,8 +38,7 @@ class SimilarShowsAdapter (private val onItemClickListener: OnItemClickListener)
         val similarShow = asyncDifferList.currentList[position]
 
         holder.binding.apply {
-            tvMovieName.text = similarShow.name
-            Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + similarShow.posterPath).into(imageViewPosterPath)
+            Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + similarShow.posterPath).into(imageViewPersonRelatedMoviePath)
 
         }
         holder.itemView.setOnClickListener {

@@ -81,11 +81,6 @@ class ShowsFragment : Fragment(),SearchView.OnQueryTextListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getTopRatedShows()
-    }
-
 
     private fun searchShow(query:String?){
         query?.let { showsViewModel.searchShow(it) }

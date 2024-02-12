@@ -149,7 +149,19 @@
             android:name="showData"
             app:argType="integer" />
         <action
-            android:id="@+id/action_similarShowDetailFragment_to_showDetailFragment"
-            app:destination="@id/showDetailFragment" />
+            android:id="@+id/action_similarShowDetailFragment_to_showReviewsBottomSheetFragment"
+            app:destination="@id/showReviewsBottomSheetFragment" />
+        <action
+            android:id="@+id/action_similarShowDetailFragment_to_popularPeopleDetailFragment"
+            app:destination="@id/popularPeopleDetailFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/showReviewsBottomSheetFragment"
+        android:name="com.ozanarik.mvvmmovieapp.ui.fragments.ShowReviewsBottomSheetFragment"
+        android:label="fragment_show_reviews_bottom_sheet"
+        tools:layout="@layout/fragment_show_reviews_bottom_sheet" >
+        <argument
+            android:name="showData"
+            app:argType="integer" />
+    </dialog>
 </navigation>

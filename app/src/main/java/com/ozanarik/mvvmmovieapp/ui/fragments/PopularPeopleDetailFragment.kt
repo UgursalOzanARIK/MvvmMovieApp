@@ -97,7 +97,7 @@ class PopularPeopleDetailFragment : Fragment() {
                         binding.apply {
 
 
-
+                            tvPopularPersonName.text = personDetail?.name?:"N/A"
                             tvImdbId.text = "Imdb Id : ${personDetail!!.imdbİd}"
                             tvAlsoKnownAs.text = personDetail.alsoKnownAs.toString()
                             tvPersonBiography.text = personDetail.biography

@@ -36,8 +36,6 @@
                 app:maxImageSize="40dp"
                 app:useCompatPadding="false" />
 
-
-
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewPosterPath"
                 android:layout_width="match_parent"
@@ -69,13 +67,13 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvShowCast"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="250dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvShowTagline" />
+                app:layout_constraintTop_toBottomOf="@+id/tvShowRunTime" />
 
 
 
@@ -101,8 +99,7 @@
                 android:id="@+id/constraintLayoutShowOverview"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/main_screen_visual_cardview_bg"
+                android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView3">
@@ -125,35 +122,40 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/tvShowSimilarShows"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_slab_bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:textAlignment="textStart"
-                android:textSize="16dp"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayoutShowOverview"
-                android:layout_marginTop="16dp"
-                android:text="Similar Shows"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayoutShowSimilar"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/episode_detail_custom_bg"
+                android:layout_marginTop="32dp"
+                android:background="#0C0C0C"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvShowSimilarShows">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayoutShowOverview">
+
+
+                <TextView
+                    android:id="@+id/tvSimilarShows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/roboto_slab_bold"
+                    android:text="Similar Shows"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSimilarShows"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="64dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -294,7 +296,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

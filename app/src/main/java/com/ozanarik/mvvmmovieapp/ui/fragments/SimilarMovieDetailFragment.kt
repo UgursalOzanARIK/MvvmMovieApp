@@ -22,6 +22,8 @@ import com.ozanarik.mvvmmovieapp.utils.CONSTANTS
 import com.ozanarik.mvvmmovieapp.utils.Extensions
 import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,6 +54,7 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
         getMovieCredit()
         handleMovieArgs()
         handleReviewFragmentNavigation()
+        getMovieYoutubeTrailer()
 
 
         return binding.root
@@ -75,44 +78,40 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                 when(detailedMovieResponse){
                     is Resource.Success->{
 
-                        binding.tvTitleDetailBottomSheet.text = detailedMovieResponse.data!!.originalTitle
+                        binding.apply {
+                            tvTitleDetailBottomSheet.text = detailedMovieResponse.data!!.originalTitle
 
-                        val decimalFormat = DecimalFormat("#.##")
-
-                        binding.tvImdbAverageDetailBottomSheet.text = "IMDB / ${decimalFormat.format(detailedMovieResponse.data.voteAverage)}"
-                        binding.tvDescriptionBottomSheet.text = detailedMovieResponse.data.overview
-                        Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + detailedMovieResponse.data.posterPath).placeholder(R.drawable.placeholder).into(binding.imageViewPosterPathBottomSheet)
-
-                        binding.tvOriginalLanguageBottomSheet.text = movieViewModel.getMovieLanguage(detailedMovieResponse.data.originalLanguage)
-                        binding.tvRunTimeBottomSheet.text = "${detailedMovieResponse.data.runtime} min"
-                        binding.tvTaglineBottomSheet.text = " \"${detailedMovieResponse.data.tagline}\" "
-
-                        val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}
-
-                        binding.tvGenreBottomSheet.text = genreNames
-
-                        val productionCompanies = detailedMovieResponse.data.productionCompanies.joinToString(", "){it.name}
-                        val productionCountries = detailedMovieResponse.data.productionCountries.joinToString(", "){it.name}
-
-                        binding.tvProductionCompaniesBottomSheet.text = "Production Companies : $productionCompanies"
-                        binding.tvProductionCountriesBottomSheet.text = "Production Countries : $productionCountries"
-
-                        binding.tvTrailer.setOnClickListener {
-                            getMovieYoutubeTrailer()
-                        }
+                            val decimalFormat = DecimalFormat("#.##")
 
 
-                        binding.cvHomePageBottomSheet.setOnClickListener{
+                            tvImdbAverageDetailBottomSheet.text = "IMDB / ${decimalFormat.format(detailedMovieResponse.data.voteAverage)}"
+                            tvDescriptionBottomSheet.text = detailedMovieResponse.data.overview
+                            Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + detailedMovieResponse.data.posterPath).placeholder(R.drawable.placeholder).into(binding.imageViewPosterPathBottomSheet)
+
+                            tvOriginalLanguageBottomSheet.text = movieViewModel.getMovieLanguage(detailedMovieResponse.data.originalLanguage)
+                            tvRunTimeBottomSheet.text = "${detailedMovieResponse.data.runtime} min"
+                            tvTaglineBottomSheet.text = " \"${detailedMovieResponse.data.tagline}\" "
+
+                            val genreNames = detailedMovieResponse.data.genres.joinToString(", "){it.name}
+
+                            tvGenreBottomSheet.text = genreNames
+
+                            val productionCompanies = detailedMovieResponse.data.productionCompanies.joinToString(", "){it.name}
+                            val productionCountries = detailedMovieResponse.data.productionCountries.joinToString(", "){it.name}
+
+                            tvProductionCompaniesBottomSheet.text = "Production Companies : $productionCompanies"
+                            tvProductionCountriesBottomSheet.text = "Production Countries : $productionCountries"
+
+                            cvHomePageBottomSheet.setOnClickListener{
+                                val movieHomePage = detailedMovieResponse.data.homepage.let { Uri.parse(it) }
 
 
-                            val movieHomePage = detailedMovieResponse.data.homepage.let { Uri.parse(it) }
+                                val intent = Intent(Intent.ACTION_VIEW,movieHomePage)
 
+                                val intentChooser = Intent.createChooser(intent,"Choose Action")
 
-                            val intent = Intent(Intent.ACTION_VIEW,movieHomePage)
-
-                            val intentChooser = Intent.createChooser(intent,"Choose Action")
-
-                            startActivity(intentChooser)
+                                startActivity(intentChooser)
+                            }
                         }
                     }
                     is Resource.Error->{
@@ -164,20 +163,23 @@ class SimilarMovieDetailFragment : BottomSheetDialogFragment() {
                 when(movieTrailerResponse){
                     is Resource.Success->{
 
-                        val results = movieTrailerResponse.data?.results
+                        binding.apply {
+                            ytTrailer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener(){
+                                override fun onReady(youTubePlayer: YouTubePlayer) {
 
-                        if (!results.isNullOrEmpty()) {
+                                    val showTrailer = movieTrailerResponse.data?.results
+                                    if (showTrailer.isNullOrEmpty()){
+                                        showSnackbar("No trailer found for the show...")
+                                    }else{
+                                        val videoId = showTrailer?.first()?.key
+                                        if (videoId!=null){
+                                            youTubePlayer.loadVideo(videoId,0.5f)
+                                        }
+                                    }
 
-                            val uri = Uri.parse(results[0].key)
-
-                                val intent = Intent(Intent.ACTION_VIEW,uri)
-                                val intentChooser = Intent.createChooser(intent,"Choose An Action")
-                                startActivity(intentChooser)
-
-                        }else{
-                            Log.e("as","nul")
+                                }
+                            })
                         }
-
 
                     }
                     is Resource.Error->{

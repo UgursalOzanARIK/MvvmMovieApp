@@ -36,9 +36,6 @@ class MovieReviewsBottomSheetFragment : BottomSheetDialogFragment() {
         // Inflate the layout for this fragment
         binding = FragmentMovieReviewsBottomSheetBinding.inflate(inflater,container,false)
 
-
-        Log.e("asd","oncreate")
-
         movieViewModel = ViewModelProvider(this)[MovieViewModel::class.java]
 
 
@@ -67,7 +64,6 @@ class MovieReviewsBottomSheetFragment : BottomSheetDialogFragment() {
                     is Resource.Success->{
                         movieReviewAdapter.asyncDifferList.submitList(reviewResponse.data!!.results)
 
-                        Log.e("asd","success")
 
                     }
                     is Resource.Loading->{

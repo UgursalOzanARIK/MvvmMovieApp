@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +38,7 @@ class SimilarShowDetailFragment : Fragment() {
     private lateinit var showsViewModel: ShowsViewModel
     private lateinit var showsCreditAdapter: ShowsCreditAdapter
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,6 +54,7 @@ class SimilarShowDetailFragment : Fragment() {
         handleShowCredit()
         getShowYoutubeTrailer()
         handleShowDetail()
+        handleReviewFragmentNavigation()
 
 
         return binding.root
@@ -70,7 +73,18 @@ class SimilarShowDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             showsViewModel.showCreditData.collect{showCreditResponse->
                 when(showCreditResponse){
-                    is Resource.Success->{showsCreditAdapter.asyncDifferList.submitList(showCreditResponse.data!!.cast) }
+                    is Resource.Success->{
+
+                        binding.apply {
+                            val maxActorsAndActresses = 4
+                            val actorActressList = showCreditResponse.data?.cast
+
+                            val castList = actorActressList?.let { it.take(maxActorsAndActresses).joinToString(", "){it.name} }
+
+                            tvSimilarShowCast.text = "Cast : $castList"
+                            showsCreditAdapter.asyncDifferList.submitList(showCreditResponse.data!!.cast)
+                        }
+                    }
                     is Resource.Loading-> {showSnackbar("Fetching Data")}
 
                     is Resource.Error->showSnackbar(showCreditResponse.message!!)
@@ -80,6 +94,7 @@ class SimilarShowDetailFragment : Fragment() {
         }
 
     }
+
 
     private fun getShowYoutubeTrailer(){
 
@@ -116,6 +131,28 @@ class SimilarShowDetailFragment : Fragment() {
 
     }
 
+
+    private fun handleReviewFragmentNavigation(){
+
+        val showDataDetail:SimilarShowDetailFragmentArgs by navArgs()
+
+        val showData = showDataDetail.showData
+        binding.tvSimilarShowReview.setOnClickListener {
+
+
+            val bundle = Bundle().apply {
+                putInt("showData",showData)
+            }
+
+            val showReviewFragment = ShowReviewsBottomSheetFragment()
+            showReviewFragment.arguments = bundle
+
+
+            showReviewFragment.show(childFragmentManager,showReviewFragment.tag)
+
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private fun handleShowDetail(){
 
@@ -142,7 +179,7 @@ class SimilarShowDetailFragment : Fragment() {
 
                         binding.apply {
                             tvSimilarShowImdbRate.text = "IMDB / ${decimalFormat.format(detailedShowData.data!!.voteAverage)}"
-                            tvSimilarShowOriginalName.text = showDetail!!.originalName
+                            tvSimilarShowOriginalName.text = showDetail!!.name
                             Picasso.get().load(CONSTANTS.IMAGE_BASE_URL + showDetail.posterPath).into(binding.imageViewSimilarShowDetail)
                             tvSimilarShowDescription.text = showDetail.overview
 
@@ -165,11 +202,7 @@ class SimilarShowDetailFragment : Fragment() {
 
                             tvSimilarShowRunTime.text = "$episodeRunTimeString min"
                             tvSimilarShowOriginalLanguage.text = showsViewModel.getMovieLanguage(showDetail.originalLanguage)
-
                         }
-
-
-
                     }
                     is Resource.Error->{
                         showSnackbar(detailedShowData.message!!)
@@ -191,7 +224,7 @@ class SimilarShowDetailFragment : Fragment() {
         showsCreditAdapter = ShowsCreditAdapter(object : ShowsCreditAdapter.OnItemClickListener {
             override fun onCastClicked(currentCast: com.ozanarik.mvvmmovieapp.business.models.shows_model.shows_credits_cast_model.Cast) {
 
-                val personToPass = ShowDetailFragmentDirections.actionShowDetailFragmentToPopularPeopleDetailFragment(currentCast.id)
+                val personToPass = SimilarShowDetailFragmentDirections.actionSimilarShowDetailFragmentToPopularPeopleDetailFragment (currentCast.id)
                 findNavController().navigate(personToPass)
 
 

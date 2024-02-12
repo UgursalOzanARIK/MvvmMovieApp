@@ -21,10 +21,14 @@ import com.ozanarik.mvvmmovieapp.ui.adapters.movieadapter.SimilarMoviesAdapter
 import com.ozanarik.mvvmmovieapp.ui.adapters.moviecreditadapter.MovieCreditAdapter
 import com.ozanarik.mvvmmovieapp.ui.viewmodels.MovieViewModel
 import com.ozanarik.mvvmmovieapp.utils.CONSTANTS.Companion.IMAGE_BASE_URL
+import com.ozanarik.mvvmmovieapp.utils.Extensions.Companion.showSnackbar
 import com.ozanarik.mvvmmovieapp.utils.Resource
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 @AndroidEntryPoint
 class CastRelatedMovies : Fragment(){
@@ -84,6 +88,10 @@ class CastRelatedMovies : Fragment(){
                         tvProductionCompaniesCastRelated.text = "Production Companies : $productionCompanies"
                         tvProductionCountriesCastRelated.text = "Production Countries : $productionCountries"
                         detailedMovie.tagline.let { tvCastRelatedTagline.text = it }
+
+                        val decimalFormat = DecimalFormat("#.##")
+
+                        tvImdCastRelated.text = "IMDB / ${decimalFormat.format(detailedMovie.voteAverage)}"
 
                         val genreList = detailedMovie.genres.let {genre->genre.joinToString (", "){it.name}  }
 
@@ -146,16 +154,22 @@ class CastRelatedMovies : Fragment(){
                     is Resource.Success->{
 
 
-                        binding.tvYtCastRelated.setOnClickListener {
+                        binding.apply {
+                            ytTrailerCastRelated.addYouTubePlayerListener(object : AbstractYouTubePlayerListener(){
+                                override fun onReady(youTubePlayer: YouTubePlayer) {
 
-                            val results = movieTrailerResponse.data?.results
-                            if (!results.isNullOrEmpty()) {
-                                val movieUri = Uri.parse(results[0].key)
-                                val intent = Intent(Intent.ACTION_VIEW, movieUri)
-                                val intentChooser = Intent.createChooser(intent, "Choose An Action")
-                                startActivity(intentChooser)
+                                    val showTrailer = movieTrailerResponse.data?.results
+                                    if (showTrailer.isNullOrEmpty()){
+                                        showSnackbar("No trailer found for the show...")
+                                    }else{
+                                        val videoId = showTrailer?.first()?.key
+                                        if (videoId!=null){
+                                            youTubePlayer.loadVideo(videoId,0.5f)
+                                        }
+                                    }
 
-                            }
+                                }
+                            })
                         }
 
 
