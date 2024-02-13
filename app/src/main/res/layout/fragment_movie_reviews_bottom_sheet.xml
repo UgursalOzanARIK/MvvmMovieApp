@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/episode_detail_custom_bg"
-    tools:context=".ui.fragments.MovieReviewsBottomSheetFragment">
+    tools:context=".ui.fragments.MovieReviewsBottomSheetFragment"
+    android:paddingBottom="16dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMovieReviews"

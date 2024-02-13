@@ -57,6 +57,7 @@ class ShowDetailFragment : Fragment() {
         handleShowCredit()
         getShowYoutubeTrailer()
         getSimilarShows()
+        handleReviewFragmentNavigation()
 
     }
 
@@ -75,6 +76,30 @@ class ShowDetailFragment : Fragment() {
                     is Resource.Error->{showSnackbar(similarShowsResponse.message!!)}
                 }
             }
+        }
+    }
+
+    private fun handleReviewFragmentNavigation(){
+
+        val showDataDetail:SimilarShowDetailFragmentArgs by navArgs()
+
+        val showData = showDataDetail.showData
+        binding.tvShowReview.setOnClickListener {
+
+
+            val bundle = Bundle().apply {
+                putInt("showData",showData)
+            }
+
+            val showReviewFragment = ShowReviewsBottomSheetFragment()
+            showReviewFragment.arguments = bundle
+
+
+            showReviewFragment.show(requireActivity().supportFragmentManager,showReviewFragment.tag)
+
+
+
+
         }
     }
 

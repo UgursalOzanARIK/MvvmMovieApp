@@ -283,6 +283,7 @@ class MoviesFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
                 updateAdapter(sortedList)
             }.create().show()
+
         }
 
     }

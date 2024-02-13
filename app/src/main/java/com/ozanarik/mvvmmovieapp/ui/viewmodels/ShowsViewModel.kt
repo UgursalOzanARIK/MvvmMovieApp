@@ -7,6 +7,7 @@ import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowDetailModel
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.ShowsResponse
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.show_youtube_trailer_response.ShowsYoutubeTrailerModel
 import com.ozanarik.mvvmmovieapp.business.models.shows_model.shows_credits_cast_model.ShowCreditResponse
+import com.ozanarik.mvvmmovieapp.ui.adapters.showsadapters.show_review.ShowReviewResponse
 import com.ozanarik.mvvmmovieapp.utils.MovieLanguage
 import com.ozanarik.mvvmmovieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,32 @@ class ShowsViewModel @Inject constructor(private val showsRepository: ShowsRepos
 
     private val _similarShowData:MutableStateFlow<Resource<ShowsResponse>> = MutableStateFlow(Resource.Loading())
     val similarShowData:StateFlow<Resource<ShowsResponse>> = _similarShowData
+
+
+    private val _showReviewData:MutableStateFlow<Resource<ShowReviewResponse>> = MutableStateFlow(Resource.Loading())
+    val showReviewData:StateFlow<Resource<ShowReviewResponse>> = _showReviewData
+
+
+    fun getShowReviews(series_id: Int)=viewModelScope.launch {
+        _showReviewData.value = Resource.Loading()
+
+        try {
+
+            val showReviewResponse = withContext(Dispatchers.IO){
+                showsRepository.getShowReviews(series_id)
+            }
+            if (showReviewResponse.isSuccessful){
+                _showReviewData.value = Resource.Success(showReviewResponse.body()!!)
+            }
+
+        }catch (e:Exception){
+            _showReviewData.value = Resource.Error(e.localizedMessage?:e.message!!)
+
+        }catch (e:IOException){
+            _showReviewData.value = Resource.Error(e.localizedMessage?:e.message!!)
+        }
+
+    }
 
 
     fun getSimilarShows(series_id: Int)=viewModelScope.launch {
@@ -253,15 +280,46 @@ class ShowsViewModel @Inject constructor(private val showsRepository: ShowsRepos
 
         return when (languageValue) {
 
-            MovieLanguage.English.language -> "English"
-            MovieLanguage.Russian.language -> "Russian"
-            MovieLanguage.Korean.language -> "Korean"
-            MovieLanguage.Japanese.language -> "Japanese"
-            MovieLanguage.Italian.language -> "Italian"
-            MovieLanguage.Mexican.language -> "Mexican"
-            MovieLanguage.French.language -> "French"
-            MovieLanguage.German.language -> "German"
-            MovieLanguage.Australia.language -> "Australia"
+            MovieLanguage.English.language->"English"
+            MovieLanguage.Russian.language->"Russian"
+            MovieLanguage.Korean.language->"Korean"
+            MovieLanguage.Japanese.language->"Japanese"
+            MovieLanguage.Italian.language->"Italian"
+            MovieLanguage.Mexican.language->"Mexican"
+            MovieLanguage.French.language->"French"
+            MovieLanguage.German.language->"German"
+            MovieLanguage.Australia.language->"Australia"
+            MovieLanguage.Aragonese.language->"Aragonese"
+            MovieLanguage.Akan.language->"Akan"
+            MovieLanguage.Azerbaijani.language->"Azerbaijani"
+            MovieLanguage.Czech.language->"Czech"
+            MovieLanguage.Afrikaans.language->"Afrikaans"
+            MovieLanguage.Latin.language->"Latin"
+            MovieLanguage.Turkish.language->"Turkish"
+            MovieLanguage.Icelandic.language->"Icelandic"
+            MovieLanguage.Thai.language->"Thai"
+            MovieLanguage.Kazakh.language->"Kazakh"
+            MovieLanguage.Indonesian.language->"Indonesian"
+            MovieLanguage.Portuguese.language->"Portuguese"
+            MovieLanguage.Dutch.language->"Dutch"
+            MovieLanguage.Irish.language->"Irish"
+            MovieLanguage.Hungarian.language->"Hungarian"
+            MovieLanguage.Armenian.language->"Armenian"
+            MovieLanguage.Polish.language->"Polish"
+            MovieLanguage.Ukrainian.language->"Ukrainian"
+            MovieLanguage.Persian.language->"Persian"
+            MovieLanguage.Swedish.language->"Swedish"
+            MovieLanguage.Tatar.language->"Tatar"
+            MovieLanguage.Danish.language->"Danish"
+            MovieLanguage.Turkmen.language->"Turkmen"
+            MovieLanguage.Uzbek.language->"Uzbek"
+            MovieLanguage.Spanish.language->"Spanish"
+            MovieLanguage.Bulgarian.language->"Bulgarian"
+            MovieLanguage.Macedonian.language->"Macedonian"
+            MovieLanguage.Croatian.language->"Croatian"
+            MovieLanguage.Belarusian.language->"Belarusian"
+            MovieLanguage.Slovenian.language->"Slovenian"
+
 
             else -> "N/A"
         }

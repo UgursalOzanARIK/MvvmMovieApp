@@ -148,7 +148,10 @@ class SimilarShowDetailFragment : Fragment() {
             showReviewFragment.arguments = bundle
 
 
-            showReviewFragment.show(childFragmentManager,showReviewFragment.tag)
+            showReviewFragment.show(requireActivity().supportFragmentManager,showReviewFragment.tag)
+
+
+
 
         }
     }
@@ -192,6 +195,17 @@ class SimilarShowDetailFragment : Fragment() {
                                 }
                             }
 
+                            cvHomePageSimilarShowDetail.setOnClickListener {
+
+                                val uri = Uri.parse(detailedShowData.data.homepage)
+                                val intent = Intent(Intent.ACTION_VIEW,uri)
+
+                                val intentChooser = Intent.createChooser(intent,"Choose An Action")
+                                startActivity(intentChooser)
+
+                            }
+
+
                             val showGenres = showDetail.genres.joinToString(", "){it.name}
                             tvSimilarShowGenre.text = showGenres
 
@@ -214,8 +228,6 @@ class SimilarShowDetailFragment : Fragment() {
             }
         }
     }
-
-
 
 
 

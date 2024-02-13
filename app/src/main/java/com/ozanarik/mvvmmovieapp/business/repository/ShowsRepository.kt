@@ -24,5 +24,7 @@ class ShowsRepository @Inject constructor (private val showApi: ShowApi) {
 
     suspend fun getSimilarShows(series_id: Int)=showApi.getSimilarShows(series_id)
 
+    suspend fun getShowReviews(series_id: Int)=showApi.getShowReviews(series_id)
+
 
 }
