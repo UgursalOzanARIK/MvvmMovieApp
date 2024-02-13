@@ -2,7 +2,6 @@
 
 # **Features**
 
-
 1.Movies and Shows fragments including Now playing movies/shows, Upcoming movies/shows, Top rated movies/shows, Popular movies/shows,
 
 2.Movie search on movie fragment
