@@ -18,9 +18,9 @@
 
 8.Popular people detail page such as biography,birthdate,movies in which they take part
 
-9.Movie fragment sort functioanlity by Imdb Rate, Release Date and Default
+9.Movie fragment sort functionality by Imdb Rate, Release Date and Default
 
-10.Show fragment sort functioanlity by Imdb Rate, Release Date and Default
+10.Show fragment sort functinality by Imdb Rate, Release Date and Default
 
 # **Tools**
 
